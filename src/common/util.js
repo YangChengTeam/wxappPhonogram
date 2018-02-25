@@ -19,6 +19,6 @@ export default {
             	 iv: userInfo.iv
             }, userInfo.rawData))
          }
-         return [null]
+         return [{errMsg: 'login fail'}, null]
      }
 }

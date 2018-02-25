@@ -1,9 +1,11 @@
 <style lang="less">
- 
+ .read2me {
+    background: #989890;
+ }
 </style>
 <template>
-  <view >
-  </view>
+  <swiper-item class="read2me">
+  </swiper-item>
 </template>
 <script>
   import wepy from 'wepy'

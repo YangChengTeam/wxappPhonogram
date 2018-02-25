@@ -1,16 +1,14 @@
 <style lang="less">
- .interest {
-    background: #fff;
- }
+ 
 </style>
 <template>
-    <swiper-item class="interest">
-    </swiper-item>
+  <view >
+  </view>
 </template>
 <script>
   import wepy from 'wepy'
 
-  export default class Interest extends wepy.component {
+  export default class WordList extends wepy.component {
     data = {}
 
     events = {}

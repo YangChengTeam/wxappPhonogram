@@ -1,10 +1,14 @@
 <style lang="less">
- 
+ .learn {
+    background: #000;
+ }
 </style>
+
 <template>
-  <view >
-  </view>
+  <swiper-item class="learn">
+  </swiper-item>
 </template>
+
 <script>
   import wepy from 'wepy'
 

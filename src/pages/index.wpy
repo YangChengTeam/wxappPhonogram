@@ -1,31 +1,68 @@
 <style lang="less">
-
+.menu {
+  display: flex;
+  flex-direction: row;
+}
 </style>
 <template>
-  
+    <view class="menu">
+        <button @tap="change(0)" class="{{ currentIndex == 0 ? 'hover' : ''}}">学音标</button>
+        <button @tap="change(1)" class="{{ currentIndex == 1 ? 'hover' : ''}}">跟我读</button>
+        <button @tap="change(2)" class="{{ currentIndex == 2 ? 'hover' : ''}}">有趣音标课</button>
+    </view>
+    <swiper @change="change()" current="{{currentIndex}}">
+        <learn></learn>
+        <read2me></read2me>
+        <interest></interest>
+    </swiper>
 </template>
 
 <script>
   import wepy from 'wepy'
   import Toast from 'wepy-com-toast'
 
+  import Read2me from '../components/read2me'
+  import Learn from '../components/learn'
+  import Interest from '../components/interest'
+
+  import util from '../common/util.js'
+  import global from '../common/global.js'
+
   export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '音标课堂'
     }
 
-    components = {}
+    components = {
+       learn: Learn,
+       read2me: Read2me,
+       interest: Interest
+    }
 
     mixins = []
 
-    data = {}
+    data = {
+        currentIndex: 1
+    }
 
     computed = {}
 
-    methods = {}
+    methods = {
+        change(itemId , e){
+            if(itemId != "" && this.currentIndex != itemId){
+                this.currentIndex = itemId
+                return
+            }
+            let current = e.detail.current
+            this.currentIndex = current
+        }
+    }
 
     events = {}
 
-    onLoad() {}
+    async onLoad() {
+        let [err, data] = await util.login()
+        console.log(global.userInfo)
+    }
   }
 </script>

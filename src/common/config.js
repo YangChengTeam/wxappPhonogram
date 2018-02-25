@@ -1,6 +1,6 @@
 const debug = true
 const host = {
-	dev: "",  //测试服务器
+	dev: "https://www.baidu.com/",  //测试服务器
 	pro: ""   //正式服务器
 }
 

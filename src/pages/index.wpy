@@ -1,0 +1,31 @@
+<style lang="less">
+
+</style>
+<template>
+  
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Toast from 'wepy-com-toast'
+
+  export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '音标课堂'
+    }
+
+    components = {}
+
+    mixins = []
+
+    data = {}
+
+    computed = {}
+
+    methods = {}
+
+    events = {}
+
+    onLoad() {}
+  }
+</script>

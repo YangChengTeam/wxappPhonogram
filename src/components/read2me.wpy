@@ -1,0 +1,21 @@
+<style lang="less">
+ 
+</style>
+<template>
+  <view >
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class Read2me extends wepy.component {
+    data = {}
+
+    events = {}
+
+    methods = {}
+
+    onLoad () {
+    }
+  }
+</script>

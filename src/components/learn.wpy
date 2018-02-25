@@ -6,7 +6,7 @@
 
 <template>
   <swiper-item class="learn">
-     <scroll-view scroll-y="true" style="height: 100%;">
+     <view >
       <view>111111</view>
             <view>111111</view>
 
@@ -55,7 +55,7 @@
       <view>111111</view>
       <view>111111</view>
       <view>111111</view>
- </scroll-view>
+ </view>
   </swiper-item>
 </template>
 

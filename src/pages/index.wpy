@@ -22,11 +22,11 @@
 
 swiper {
    width:100%;
-   height:90%;
+   height:100%;
 }
 </style>
 <template>
-   <view class="main">
+   <scroll-view class="main" scroll-y="true">
     <view class="menu">
         <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}">学音标</button>
         <button @tap="change(1)" class="menu-read2me{{ currentIndex == 1 ? ' menu-read2me-hover' : ''}}">跟我读</button>
@@ -37,7 +37,7 @@ swiper {
         <read2me></read2me>
         <interest></interest>
     </swiper>
-  </view>
+  </scroll-view>
 </template>
 
 <script>

@@ -2,6 +2,10 @@
  .interest {
     background: #fff;
  }
+
+ .hover {
+    background: #000
+ }
 </style>
 <template>
     <swiper-item class="interest">

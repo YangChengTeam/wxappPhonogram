@@ -1,11 +1,61 @@
 <style lang="less">
  .learn {
-    background: #000;
+    background: rgba(0,0,0,0);
  }
 </style>
 
 <template>
   <swiper-item class="learn">
+     <scroll-view scroll-y="true" style="height: 100%;">
+      <view>111111</view>
+            <view>111111</view>
+
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+      <view>111111</view>
+ </scroll-view>
   </swiper-item>
 </template>
 

@@ -1,4 +1,5 @@
 <style lang="less">
+@import 'styles/base.less';
 
 </style>
 
@@ -16,7 +17,8 @@ export default class extends wepy.app {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: '音标课堂',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'black',
+      "disableScroll":true
     }
   }
 

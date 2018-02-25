@@ -1,20 +1,43 @@
 <style lang="less">
+.main {
+   width: 100%;
+   height: 100%;
+}
 .menu {
   display: flex;
   flex-direction: row;
+  height: 10%;
+}
+
+
+.menu-learn {
+   background: url('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2938166344,2102876327&fm=27&gp=0.jpg') no-repeat;
+   background-size: cover;
+}
+
+.menu-learn-hover {
+   background: url('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1519568746718&di=cff188dcb7d926edcba0b4d9fe23960c&imgtype=0&src=http%3A%2F%2Fpic.58pic.com%2F58pic%2F15%2F53%2F35%2F68s58PICtE5_1024.png') no-repeat;
+   background-size: cover;
+}
+
+swiper {
+   width:100%;
+   height:90%;
 }
 </style>
 <template>
+   <view class="main">
     <view class="menu">
-        <button @tap="change(0)" class="{{ currentIndex == 0 ? 'hover' : ''}}">学音标</button>
-        <button @tap="change(1)" class="{{ currentIndex == 1 ? 'hover' : ''}}">跟我读</button>
-        <button @tap="change(2)" class="{{ currentIndex == 2 ? 'hover' : ''}}">有趣音标课</button>
+        <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}">学音标</button>
+        <button @tap="change(1)" class="menu-read2me{{ currentIndex == 1 ? ' menu-read2me-hover' : ''}}">跟我读</button>
+        <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}">有趣音标课</button>
     </view>
     <swiper @change="change()" current="{{currentIndex}}">
         <learn></learn>
         <read2me></read2me>
         <interest></interest>
     </swiper>
+  </view>
 </template>
 
 <script>
@@ -49,8 +72,10 @@
 
     methods = {
         change(itemId , e){
-            if(itemId != "" && this.currentIndex != itemId){
-                this.currentIndex = itemId
+            if(itemId != ""){
+                if(this.currentIndex != itemId){
+                    this.currentIndex = itemId
+                }
                 return
             }
             let current = e.detail.current

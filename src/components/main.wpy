@@ -1,0 +1,55 @@
+<style lang="less">
+.container {
+  display:flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.content {
+    background: url('http://tic.upkao.com/Public/wxappImgs/content-bg.png') no-repeat;
+    background-size: 100% 100%;
+    width: 706rpx;
+    height: 920rpx;
+    margin-top: 15px;
+    display:flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.list {
+   width: 606rpx;
+   height: 770rpx;
+   margin-top: 60rpx;
+}
+
+</style>
+<template>
+  <swiper-item>
+     <view class="container">
+          <view class="content">
+              <swiper class="list">
+                  <slot></slot>
+              </swiper>
+          </view>
+          <view class="nav"></view>
+     </view>
+  </swiper-item>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class Main extends wepy.component {
+    data = {}
+
+    events = {}
+
+    methods = {}
+
+    onLoad () {
+    }
+  }
+</script>

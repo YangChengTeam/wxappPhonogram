@@ -13,6 +13,7 @@ export default {
 			method: 'GET',
 			dataType: 'json',
 			header: {
+				Session: global.session,
 			   	Token: md5(sha256(token))
 			}
 		}))
@@ -26,6 +27,7 @@ export default {
 			data: params,
 			dataType: 'json',
 			header: {
+				Session: global.session,
 			   	Token: md5(sha256(token))
 			}
 		}))

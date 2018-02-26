@@ -1,69 +1,39 @@
 <style lang="less">
- .learn {
-    background: rgba(0,0,0,0);
- }
+
 </style>
 
 <template>
-  <swiper-item class="learn">
-     <view >
-      <view>111111</view>
-            <view>111111</view>
-
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
-      <view>111111</view>
- </view>
-  </swiper-item>
+   <main>
+       <swiper-item>
+                      <view class="test">
+                          <view>1111111111</view>
+                          <view>1111111111</view>
+                          <view>1111111111</view>
+                          <view>1111111111</view>
+                      </view>
+                   </swiper-item>
+                  <swiper-item>
+                      <view class="test">
+                          <view>1111111111</view>
+                          <view>1111111111</view>
+                          <view>1111111111</view>
+                          <view>1111111111</view>
+                      </view>
+                   </swiper-item>
+                </swiper>
+                  
+  </main>
 </template>
 
 <script>
   import wepy from 'wepy'
-
+  import Main from '../components/main'
   export default class Learn extends wepy.component {
     data = {}
+
+    components = {
+       main: Main
+    }
 
     events = {}
 

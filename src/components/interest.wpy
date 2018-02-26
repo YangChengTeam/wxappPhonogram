@@ -1,20 +1,18 @@
 <style lang="less">
- .interest {
-    background: #fff;
- }
-
- .hover {
-    background: #000
- }
+ 
 </style>
 <template>
-    <swiper-item class="interest">
-    </swiper-item>
+    <main></main>
 </template>
 <script>
   import wepy from 'wepy'
+  import Main from '../components/main'
 
   export default class Interest extends wepy.component {
+    components = {
+       main: Main
+    }
+
     data = {}
 
     events = {}

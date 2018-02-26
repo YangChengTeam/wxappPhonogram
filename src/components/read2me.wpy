@@ -1,17 +1,21 @@
 <style lang="less">
- .read2me {
-    background: #989890;
- }
+
 </style>
 <template>
-  <swiper-item class="read2me">
-  </swiper-item>
+  <main>
+     
+  </main>
 </template>
 <script>
   import wepy from 'wepy'
+  import Main from '../components/main'
 
   export default class Read2me extends wepy.component {
     data = {}
+
+    components = {
+       main: Main
+    }
 
     events = {}
 

@@ -1,43 +1,83 @@
 <style lang="less">
-.main {
+.main-bg {
+   position: fixed;
    width: 100%;
    height: 100%;
-}
-.menu {
-  display: flex;
-  flex-direction: row;
-  height: 10%;
+   background-color: #72d9fa;
+   background: url('http://tic.upkao.com/Public/wxappImgs/main-bg.jpg') no-repeat center center;
+   background-size: 100% 100%;
+   background-attachment: fixed;
 }
 
+.menu {
+    display: flex;
+    flex-direction: row;
+    height: 10%;
+    width: 100%;
+    align-items: center;
+}
+
+.menu > button, .menu > button::after {
+    border: none;
+}
 
 .menu-learn {
-   background: url('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2938166344,2102876327&fm=27&gp=0.jpg') no-repeat;
-   background-size: cover;
+   background-color: #fff;
+   background: url('http://tic.upkao.com/Public/wxappImgs/learn.png') no-repeat;
+   background-size: 100% 100%;
+   width: 198rpx;
+   height: 105rpx;
 }
 
 .menu-learn-hover {
-   background: url('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1519568746718&di=cff188dcb7d926edcba0b4d9fe23960c&imgtype=0&src=http%3A%2F%2Fpic.58pic.com%2F58pic%2F15%2F53%2F35%2F68s58PICtE5_1024.png') no-repeat;
-   background-size: cover;
+   background: url('http://tic.upkao.com/Public/wxappImgs/learn-hover.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+.menu-read2me {
+   background-color: #fff;
+   background: url('http://tic.upkao.com/Public/wxappImgs/read2me.png') no-repeat;
+   background-size: 100% 100%;
+   width: 198rpx;
+   height: 105rpx;
+}
+
+.menu-read2me-hover {
+   background: url('http://tic.upkao.com/Public/wxappImgs/read2me-hover.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+.menu-interest {
+   background-color: #fff;
+   background: url('http://tic.upkao.com/Public/wxappImgs/interest.png') no-repeat;
+   background-size: 100% 100%;
+   width: 274rpx;
+   height: 105rpx;
+}
+
+.menu-interest-hover {
+   background: url('http://tic.upkao.com/Public/wxappImgs/interest-hover.png') no-repeat;
+   background-size: 100% 100%;
 }
 
 swiper {
    width:100%;
-   height:100%;
+   height:90%;
 }
+
 </style>
 <template>
-   <scroll-view class="main" scroll-y="true">
+    <view class="main-bg"></view>
     <view class="menu">
-        <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}">学音标</button>
-        <button @tap="change(1)" class="menu-read2me{{ currentIndex == 1 ? ' menu-read2me-hover' : ''}}">跟我读</button>
-        <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}">有趣音标课</button>
+        <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
+        <button @tap="change(1)" class="menu-read2me{{ currentIndex == 1 ? ' menu-read2me-hover' : ''}}" title="跟我读"></button>
+        <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
     <swiper @change="change()" current="{{currentIndex}}">
         <learn></learn>
         <read2me></read2me>
         <interest></interest>
     </swiper>
-  </scroll-view>
 </template>
 
 <script>
@@ -53,7 +93,6 @@ swiper {
 
   export default class Index extends wepy.page {
     config = {
-        navigationBarTitleText: '音标课堂'
     }
 
     components = {
@@ -65,7 +104,7 @@ swiper {
     mixins = []
 
     data = {
-        currentIndex: 1
+        currentIndex: 0
     }
 
     computed = {}

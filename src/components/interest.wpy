@@ -1,8 +1,102 @@
 <style lang="less">
- 
+ .interest-content {
+  display:flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.interest-video {
+  width: 602rpx;
+  height: 340rpx;
+  flex-direction: row;
+  background: url('http://tic.upkao.com/Public/wxappImgs/video-bg.png') no-repeat;
+  background-size: 100% 100%;
+}
+
+.interest-video > video, .interest-video > image {
+    width: 578rpx;
+    height: 316rpx;
+    margin: 13rpx;
+}
+
+.interest-desc {
+    background: url('http://tic.upkao.com/Public/wxappImgs/interest-desp-bg.png') no-repeat;
+    background-size: 100% 100%;
+    display:flex;
+    flex-direction: column;
+    width: 602rpx;
+    height: 388rpx;
+    margin-top: 40rpx;
+}
+
+.interest-desc-inner {
+    width: 562rpx;
+    height: 308rpx;
+    margin: 20rpx;
+}
+
+.interest-desc-inner > view {
+    overflow-x: auto;
+}
+
+.interest-desc-title {
+    -webkit-text-stroke: 1px #c94801;
+    text-shadow:  #c94801 1px 1px 5px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.interest-desc-desc {
+    color: #999;
+    margin-top: 20rpx;
+}
+
+.interest-desc-strong {
+    color: #c94801;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 20rpx;
+}
+
+.interest-desc-price {
+   color: #333;
+}
+
+.new-price {
+    color: #ff0000;
+    font-size: 30px;
+}
+
+.old-price {
+   text-decoration: line-through;
+   margin-left: 60rpx;
+}
 </style>
 <template>
-    <main></main>
+<main :hasListBtn="hasListBtn">
+    <swiper-item>
+     <view class="interest-content">
+        <view class="interest-video">
+<!--             <video></video>
+ -->        
+              <image />
+       </view>
+        <view class="interest-desc">
+           <view class="interest-desc-inner">
+                <view class="interest-desc-title">趣味音标课</view>
+                <view class="interest-desc-desc">在学习完拼音课堂之后， 快来学习标课堂吧</view>
+                <view class="interest-desc-strong">单词能力提高必选的12节课</view>
+                <view class="interest-desc-price">迎新年物价<text class="new-price">29</text>元<text class="old-price">原价60元</text></view>
+          </view>
+        </view>
+        
+     </view>
+   </swiper-item>
+ </main>
 </template>
 <script>
   import wepy from 'wepy'
@@ -13,7 +107,9 @@
        main: Main
     }
 
-    data = {}
+    data = {
+        hasListBtn: false
+    }
 
     events = {}
 

@@ -1,26 +1,142 @@
 <style lang="less">
+.learn-content {
+  display:flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.learn-video {
+  width: 602rpx;
+  height: 340rpx;
+  flex-direction: row;
+  background: url('http://tic.upkao.com/Public/wxappImgs/video-bg.png') no-repeat;
+  background-size: 100% 100%;
+}
+
+.learn-video > video, .learn-video > image {
+    width: 578rpx;
+    height: 316rpx;
+    margin: 13rpx;
+}
+
+.learn-desp {
+   width: 602rpx;
+   height: 185rpx;
+   position: relative;
+   margin-top:40rpx;
+}
+
+.learn-desp > view {
+  background-color:#ffd292;
+  border-radius: 10px;
+  width:95%;
+  height:95%;
+  position: absolute;
+  margin-left:4%;
+}
+
+.learn-desp > view > view {
+    display:inline-block;
+    height:80%;
+    margin-left: 150rpx;
+    margin-right: 20rpx;
+    margin-top: 20rpx;
+    color: #000000;
+    font-size: 15px;
+    overflow-y:auto;
+}
+
+.learn-desp > image {
+    position: absolute;
+    width:157rpx;
+    height:185rpx;
+    margin-top:10rpx;
+}
+
+.learn-word-info {
+  display:flex;
+  width:602rpx;
+  height: 130rpx;
+  margin-top:40rpx;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.learn-word-samples {
+  display:flex;
+  width:80%;
+  height: 130rpx;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.learn-word-sample {
+  display:flex;
+  width: 100%;
+  height: 130rpx;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.learn-word-sample > view > text {
+   color : #ff0000;
+}
+
+.learn-word-sample > view {
+   color: #999999
+}
+
+
+@keyframes learn-word-sample-animate
+{
+0%   {transform: scale(1.5,1.5);}
+25%  {transform: scale(2.0,2.0);}
+50%  {transform: scale(1.5,1.5);}
+100% {transform: scale(1, 1);}
+}
+
+.learn-word-sample-animate {
+    animation: learn-word-sample-animate 3s;
+}
 
 </style>
 
 <template>
    <main>
-       <swiper-item>
-                      <view class="test">
-                          <view>1111111111</view>
-                          <view>1111111111</view>
-                          <view>1111111111</view>
-                          <view>1111111111</view>
-                      </view>
-                   </swiper-item>
-                  <swiper-item>
-                      <view class="test">
-                          <view>1111111111</view>
-                          <view>1111111111</view>
-                          <view>1111111111</view>
-                          <view>1111111111</view>
-                      </view>
-                   </swiper-item>
-                </swiper>
+      <swiper-item>
+           <view class="learn-content">
+               <view class="learn-video">
+                   <!-- <video></video> -->
+                   <image src="" />
+               </view>
+               <view class="learn-desp">
+                   <view>
+                       <view>
+                           舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖舌尖
+                       </view>
+                   </view>
+                   <image src="http://tic.upkao.com/Public/wxappImgs/click2read.png" />
+               </view>
+               <view class="learn-word-info">
+                   <image src="http://tic.upkao.com/Public/wxappImgs/sample.png" style="width:218rpx;height:126rpx"/>
+                   <view class="learn-word-samples">
+                       <block>
+                          <view @tap="play()" class="learn-word-sample learn-word-sample-animate">
+                            <view><text>a</text> yi</view>
+                            <view>阿姨</view>
+                          </view>
+                       </block>
+                   </view>
+               </view>
+           </view>            
+      </swiper-item>
+            
                   
   </main>
 </template>
@@ -29,7 +145,9 @@
   import wepy from 'wepy'
   import Main from '../components/main'
   export default class Learn extends wepy.component {
-    data = {}
+    data = {
+      
+    }
 
     components = {
        main: Main
@@ -37,9 +155,14 @@
 
     events = {}
 
-    methods = {}
+    methods = {
+       play(e){
+
+       }
+    }
 
     onLoad () {
+
     }
   }
 </script>

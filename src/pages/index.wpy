@@ -17,9 +17,6 @@
     align-items: center;
 }
 
-.menu > button, .menu > button::after {
-    border: none;
-}
 
 .menu-learn {
    background-color: #fff;
@@ -65,6 +62,14 @@ swiper {
    height:90%;
 }
 
+.ad {
+   position: absolute;
+   width:223rpx;
+   height:140rpx;
+   right:20rpx;
+   bottom: 120rpx;
+}
+
 </style>
 <template>
     <view class="main-bg"></view>
@@ -73,11 +78,14 @@ swiper {
         <button @tap="change(1)" class="menu-read2me{{ currentIndex == 1 ? ' menu-read2me-hover' : ''}}" title="跟我读"></button>
         <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
+
     <swiper @change="change()" current="{{currentIndex}}">
         <learn></learn>
         <read2me></read2me>
         <interest></interest>
     </swiper>
+
+    <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad">
 </template>
 
 <script>
@@ -124,8 +132,16 @@ swiper {
 
     events = {}
 
-    async onLoad() {
-        let [err, data] = await util.login()
+    onPrefetch(params){
+      
+    }
+
+    onRoute(){
+       
+    }
+
+    async onLoad(params, data) {
+        let [err, ldata] = await util.login()
         console.log(global.userInfo)
     }
   }

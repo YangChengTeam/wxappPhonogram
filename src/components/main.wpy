@@ -23,7 +23,64 @@
 .list {
    width: 606rpx;
    height: 770rpx;
-   margin-top: 60rpx;
+   margin-top: 80rpx;
+}
+
+.nav {
+   display:flex;
+   width: 110%;
+   flex-direction: row;
+   height:  100rpx;
+   align-items:center;
+   justify-content: flex-start;
+   position: relative;
+}
+
+.nav button {
+    width: 89rpx;
+    height: 91rpx;
+
+}
+
+.btn-left {
+   background: url('http://tic.upkao.com/Public/wxappImgs/left.png') no-repeat;
+   background-size: 100% 100%;
+   
+}
+
+.btn-left:hover {
+   background: url('http://tic.upkao.com/Public/wxappImgs/left-hover.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+.btn-tip {
+   background: url('http://tic.upkao.com/Public/wxappImgs/tip.png') no-repeat;
+   background-size: 100% 100%;
+   align-self: center;
+}
+
+.btn-list {
+   background: url('http://tic.upkao.com/Public/wxappImgs/list.png') no-repeat;
+   background-size: 100% 100%;
+   position:absolute;
+   right: 200rpx;
+   top: 4.5rpx;
+}
+
+.btn-list:hover {
+   background: url('http://tic.upkao.com/Public/wxappImgs/list-hover.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+
+.btn-right {
+   background: url('http://tic.upkao.com/Public/wxappImgs/right.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+.btn-right:hover {
+   background: url('http://tic.upkao.com/Public/wxappImgs/right-hover.png') no-repeat;
+   background-size: 100% 100%;
 }
 
 </style>
@@ -35,7 +92,12 @@
                   <slot></slot>
               </swiper>
           </view>
-          <view class="nav"></view>
+          <view class="nav">
+              <button title="左" class="btn-left"></button>
+              <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">1/48</button>
+              <button title="右" class="btn-right"></button>
+              <button title="列表" class="btn-list"></button>
+          </view>
      </view>
   </swiper-item>
 </template>
@@ -43,13 +105,22 @@
   import wepy from 'wepy'
 
   export default class Main extends wepy.component {
-    data = {}
+    data = {
+    }
+    
+    props = {
+       hasListBtn: {
+          type: Boolean,
+          default: true
+       }
+    }
 
     events = {}
 
     methods = {}
 
     onLoad () {
+      console.log(this.hasListBtn)
     }
   }
 </script>

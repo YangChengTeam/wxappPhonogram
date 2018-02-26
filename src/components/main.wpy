@@ -88,7 +88,7 @@
   <swiper-item>
      <view class="container">
           <view class="content">
-              <swiper class="list">
+              <swiper class="list" current="{{currentIndex}}" @change="listChange()">
                   <slot></slot>
               </swiper>
           </view>
@@ -96,7 +96,7 @@
               <button title="左" class="btn-left"></button>
               <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">1/48</button>
               <button title="右" class="btn-right"></button>
-              <button title="列表" class="btn-list"></button>
+              <button wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
           </view>
      </view>
   </swiper-item>
@@ -106,6 +106,7 @@
 
   export default class Main extends wepy.component {
     data = {
+        currentIndex: 0
     }
     
     props = {
@@ -117,7 +118,11 @@
 
     events = {}
 
-    methods = {}
+    methods = {
+       listChange(itemId, e){
+
+       }
+    }
 
     onLoad () {
       console.log(this.hasListBtn)

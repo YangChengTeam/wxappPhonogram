@@ -33,9 +33,9 @@
 }
 
 .interest-desc-inner {
-    width: 562rpx;
-    height: 308rpx;
-    margin: 20rpx;
+    width: 542rpx;
+    height: 328rpx;
+    margin: 30rpx;
 }
 
 .interest-desc-inner > view {

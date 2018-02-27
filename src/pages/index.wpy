@@ -213,8 +213,8 @@ swiper {
 }
 </style>
 <template>
-    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowLearnVideo}}"></video>
-    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}"></video>
+    <video src="{{currentVideoSrc}}" @waiting="waiting()" @error="error()" class="key-video" wx:if="{{isShowLearnVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}" poster="{{currentVideoPoster}}"></video>
 
     <view class="main-bg"></view>
     <view class="menu">
@@ -287,6 +287,7 @@ swiper {
         currentIndex: 0,
         isShowPayView: false,
         currentVideoSrc: '',
+        currentVideoPoster: '',
         phoneticList: [],
         phonetiClassList: [],
         phonetiClassInfo: {},
@@ -299,6 +300,13 @@ swiper {
     }
 
     methods = {
+        error(e){
+                        console.log(e)
+
+        },
+        waiting(e){
+            console.log(e)
+        },
         change(itemId , e){
             if(itemId.toString().length > 0){
                 if(this.currentIndex != itemId){
@@ -320,13 +328,22 @@ swiper {
     }
 
     changeData(){
+        let info;
         if(this.currentIndex == 0){
-              this.currentVideoSrc = this.phoneticList[0].video
+             info = this.phoneticList[0]
          } else if(this.currentIndex == 2){
-              this.currentVideoSrc = this.phonetiClassList[0].video
+             info = this.phonetiClassList[0]
          }
+         this.setVideoInfo(info)
          this.showVideo()
          this.$apply()
+    }
+
+    setVideoInfo(info){
+        if(!info) return
+        this.currentVideoSrc = info.video
+        this.currentVideoPoster = info.cover
+        
     }
 
     showPayView(){
@@ -336,7 +353,7 @@ swiper {
     showVideo(){
          this.isShowLearnVideo = this.currentIndex == 0 
          this.isShowInterestVideo = this.currentIndex == 2
-         
+
     }
 
     hideVideo(){

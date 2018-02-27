@@ -33,14 +33,14 @@
 }
 </style>
 <template>
-  <main>
-    <swiper-item>
+  <main :phoneticList.sync="phoneticList">
+    <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">
      <view class="read2me-content">
         <view class="read2me-process">
             <text>跟读进度: 1/3</text>
         </view>
         <view class="read2me-word-image">
-            <image src="http://tic.upkao.com/Public/wxappImgs/sample.png" />
+            <image src="{{item.img}}" />
         </view>
         <view class="read2me-play">
              <image src="http://tic.upkao.com/Public/wxappImgs/r2mholder.png" style="width:183rpx;height:203rpx;"/>
@@ -61,11 +61,19 @@
        main: Main
     }
 
+    props = {
+       phoneticList: {
+           type: Array,
+           default: []
+       }
+    }
+
     events = {}
 
     methods = {}
 
     onLoad () {
+      this.$apply()
     }
   }
 </script>

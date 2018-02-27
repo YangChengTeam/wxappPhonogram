@@ -22,7 +22,8 @@ export default class extends wepy.app {
       navigationBarBackgroundColor: '#72d9fa',
       navigationBarTitleText: '标音点读',
       navigationBarTextStyle: '#fff' ,
-      backgroundColor : '#72d9fa'
+      backgroundColor : '#72d9fa',
+      disableScroll: true
     }
   }
 
@@ -36,17 +37,7 @@ export default class extends wepy.app {
   }
 
   async onLaunch() {
-      let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
-      let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
-      if(phoneticList.data.code && phoneticList.data.code == 1){
-          this.globalData.phoneticList = phoneticList.data.data.list
-      }
-      if(phonetiClass.data.code && phonetiClass.data.code == 1){
-          this.globalData.phonetiClass = phonetiClass.data.data
-      }
-      if(this.render){
-          this.render()
-      }
+      
   }
 }
 </script>

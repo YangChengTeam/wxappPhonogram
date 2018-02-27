@@ -80,20 +80,18 @@
 }
 </style>
 <template>
-<main :hasListBtn="hasListBtn">
-    <swiper-item>
+<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList">
+    <swiper-item wx:for="{{phonetiClassList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" >
      <view class="interest-content">
         <view class="interest-video">
-<!--             <video></video>
- -->        
-              <image />
+               <image src="{{item.cover}}" />
        </view>
         <view class="interest-desc">
            <view class="interest-desc-inner">
-                <view class="interest-desc-title">趣味音标课</view>
-                <view class="interest-desc-desc">在学习完拼音课堂之后， 快来学习标课堂吧,在学习完拼音课堂之后，在学习完拼音课堂之后，在学习完拼音课堂之后习完拼音课堂之后习完拼音课堂之后，</view>
-                <view class="interest-desc-strong">单词能力提高必选的12节课</view>
-                <view class="interest-desc-price">迎新年特价<text class="new-price">29</text>元<text class="old-price">原价60元</text></view>
+                <view class="interest-desc-title">{{phonetiClassInfo.title}}</view>
+                <view class="interest-desc-desc">{{item.title}}</view>
+                <view class="interest-desc-strong">{{phonetiClassInfo.sub_title}}</view>
+                <view class="interest-desc-price">迎新年特价<text class="new-price">{{realPrice}}</text>元<text class="old-price">原价{{price}}元</text></view>
           </view>
         </view>
         
@@ -114,11 +112,32 @@
         hasListBtn: false
     }
 
+    props = {
+       phonetiClassInfo: {
+           type: Array,
+           default: []
+       },
+       phonetiClassList: {
+           type: Array,
+           default: []
+       }
+    }
+
+    computed = {
+       realPrice(){
+           return parseInt(this.phonetiClassInfo.real_price)
+       },
+       price(){
+           return parseInt(this.phonetiClassInfo.price)
+       }
+    }
+
     events = {}
 
     methods = {}
 
     onLoad () {
+        this.$apply()
     }
   }
 </script>

@@ -204,9 +204,16 @@ swiper {
    text-align: right;
 }
 
+.key-video {
+    width: 578rpx;
+    height: 316rpx;
+    left: 75rpx;
+    top: 230rpx;
+    position: absolute;
+}
 </style>
 <template>
-    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{currentIndex < 2}}"></video>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}"></video>
     <view class="main-bg"></view>
     <view class="menu">
         <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
@@ -215,13 +222,13 @@ swiper {
     </view>
 
     <swiper @change="change()" current="{{currentIndex}}">
-        <learn></learn>
-        <read2me></read2me>
-        <interest></interest>
+        <learn :phoneticList.sync="phoneticList" ></learn>
+        <read2me :phoneticList.sync="phoneticList"></read2me>
+        <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList"></interest>
     </swiper>
 
     <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
-    <view class="pay-ppw" hidden="{{hiddenPayView}}">
+    <view class="pay-ppw" wx:if="{{isShowPayView}}">
           <view class="pay-ppw-bg">
              <view class="pay-content">
                 <view class="pay-item">    
@@ -244,7 +251,7 @@ swiper {
                 </view>
             </view>
           </view>
-          <button class="pay-close" @tap="payClose()"></button>
+          <button class="pay-close" @tap="closePayView()"></button>
     </view>
 </template>
 
@@ -276,11 +283,17 @@ swiper {
 
     data = {
         currentIndex: 0,
-        hiddenPayView: true,
-        currentVideoSrc: ''
+        isShowPayView: false,
+        currentVideoSrc: '',
+        phoneticList: [],
+        phonetiClassList: [],
+        phonetiClassInfo: {},
+        isShowVideo: false
     }
 
-    computed = {}
+    computed = {
+       
+    }
 
     methods = {
         change(itemId , e){
@@ -288,24 +301,50 @@ swiper {
                 if(this.currentIndex != itemId){
                     this.currentIndex = itemId
                 }
+                this.changeData()
                 return
             }
             let current = e.detail.current
+            if(this.currentIndex == current) {
+               return
+            }
             this.currentIndex = current
+            this.changeData()
         },
-        payClose(e){
-            this.hiddenPayView = true
+        closePayView(e){
+            this.isShowPayView = false
         }
     }
 
-    payShow(){
-        this.hiddenPayView = false
+    changeData(){
+        if(this.currentIndex == 0){
+              this.currentVideoSrc = this.phoneticList[0].video
+         } else if(this.currentIndex == 2){
+              this.currentVideoSrc = this.phonetiClassList[0].video
+         }
+         this.isShowVideo = this.currentIndex == 0 || this.currentIndex == 2
+         this.$apply()
+    }
+
+    showPayView(){
+        this.isShowPayView = true
     }
 
     events = {}
 
     async onLoad(params, data) {
-
+       let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
+       let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
+       if(phoneticList.data.code && phoneticList.data.code == 1 ){
+          this.isShowVideo = this.currentIndex == 0 || this.currentIndex == 2
+          this.phoneticList = phoneticList.data.data.list
+          this.currentVideoSrc = this.phoneticList[0].video
+       }
+       if(phonetiClass.data.code && phonetiClass.data.code == 1){
+          this.phonetiClassInfo = phonetiClass.data.data.info
+          this.phonetiClassList = phonetiClass.data.data.list
+       }
+       this.$apply()
     }
   }
 </script>

@@ -158,12 +158,12 @@
   <swiper-item>
      <view class="container">
           <view class="content">
-            <swiper hidden="{{hiddenList}}" class="list" current="{{currentIndex}}" @change="listChange()">
+            <swiper hidden="{{isHiddenList}}" class="list" current="{{currentIndex}}" @change="change()">
                   <slot></slot>
             </swiper>
             <block wx:if="{{hasListBtn}}">
-               <view hidden="{{!hiddenList}}" class="image-list">
-                    <view  wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="listChange({{index}})">
+               <view hidden="{{!isHiddenList}}" class="image-list">
+                    <view  wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
                        <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
                        <block wx:if="{{index < canUseNumber ? 1 : 0}}">
                         <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg.png" style="width:292rpx;height:180rpx" class="image-item-bg" ></image>
@@ -178,13 +178,13 @@
                </view>
             </block>
           </view>
-          <view class="nav" hidden="{{hiddenList}}">
-             <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="arrow(-1)"></button>
+          <view class="nav" hidden="{{isHiddenList}}">
+             <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="clickArrow(-1)"></button>
               <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{currentIndex+1}}/{{phoneticList.length}}</button>
-              <button title="右" class="btn-right{{btnState.btnStateRight}}"  @tap="arrow(-2)"></button>
+              <button title="右" class="btn-right{{btnState.btnStateRight}}"  @tap="clickArrow(-2)"></button>
               <button @tap="toogleList()" wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
           </view>
-          <view hidden="{{!hiddenList}}">
+          <view hidden="{{!isHiddenList}}">
               <button @tap="toogleList()" title="返回" class="btn-back" style="width:198rpx; height:105rpx; margin-top:15rpx;"></button>
           </view>
      </view>
@@ -195,7 +195,7 @@
 
   export default class Main extends wepy.component {
     data = {
-        hiddenList: false,
+        isHiddenList: false,
         btnState: {
             btnStateLeft: " btn-left-disable",
             btnStateRigth: ""
@@ -213,6 +213,7 @@
            type: Array,
            default: []
        },
+
        currentIndex: {
             type: Number,
             default: 0,
@@ -223,33 +224,54 @@
     events = {}
 
     methods = {
-       listChange(itemId, e){
+       change(itemId, e){
           if(itemId.toString().length > 0){
                 if(itemId >= this.canUseNumber){
-                    this.$parent.$parent.payShow()
+                    this.$parent.$parent.showPayView()
                     this.$parent.$parent.$apply()
                     return
                 }
-                this.hiddenList = false
+                this.isHiddenList = false
                 if(this.currentIndex != itemId){
                     this.currentIndex = parseInt(itemId)
-                    this.arrow(this.currentIndex)
+                    this.changeData()
                 }
                 return
           }
           let current = e.detail.current
+          if(this.currentIndex == current) {
+               return
+          }
           this.currentIndex = current
-          this.arrow(this.currentIndex)
+          this.changeData()
        },
        toogleList(e){
-          this.hiddenList = !this.hiddenList
+          this.isHiddenList = !this.isHiddenList
+          if(this.isHiddenList){
+              this.$parent.$parent.isShowVideo = false
+          } else {
+              this.$parent.$parent.isShowVideo = true
+          }
+          this.$parent.$parent.$apply()
+
        },
-       arrow(n, e){
-           this.arrow(n)
+       clickArrow(n, e){
+           this.clickArrow(n)
        }
     }
 
-    arrow(n){ 
+    changeData(){
+         if(this.$parent.$parent.currentIndex != 1){
+            this.$parent.$parent.currentVideoSrc = this.phoneticList[this.currentIndex].video
+            this.$parent.$parent.isShowVideo = true
+         }  else {
+            this.$parent.$parent.isShowVideo = false
+         }
+         this.$parent.$parent.$apply()
+         this.clickArrow(this.currentIndex)
+    }
+
+    clickArrow(n){ 
           n = parseInt(n)
           if(this.currentIndex >= this.phoneticList.length-1){
                this.btnState.btnStateLeft = ""
@@ -278,7 +300,7 @@
 
 
     onLoad () {
-       
+       this.$apply()
     }
   }
 </script>

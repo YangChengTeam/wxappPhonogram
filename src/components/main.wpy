@@ -1,4 +1,8 @@
 <style lang="less">
+@lw: 606rpx;
+@lh: 770rpx;
+@lmt: 80rpx;
+
 .container {
   display:flex;
   align-items: center;
@@ -21,9 +25,9 @@
 }
 
 .list {
-   width: 606rpx;
-   height: 770rpx;
-   margin-top: 80rpx;
+   width: @lw;
+   height: @lh;
+   margin-top: @lmt;
 }
 
 .nav {
@@ -48,8 +52,15 @@
    
 }
 
+/*
 .btn-left:hover {
    background: url('http://tic.upkao.com/Public/wxappImgs/left-hover.png') no-repeat;
+   background-size: 100% 100%;
+}
+*/
+
+.btn-left-disable {
+   background: url('http://tic.upkao.com/Public/wxappImgs/left-disable.png') no-repeat;
    background-size: 100% 100%;
 }
 
@@ -78,9 +89,68 @@
    background-size: 100% 100%;
 }
 
+.btn-right-disable {
+   background: url('http://tic.upkao.com/Public/wxappImgs/right-disable.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+/*
 .btn-right:hover {
    background: url('http://tic.upkao.com/Public/wxappImgs/right-hover.png') no-repeat;
    background-size: 100% 100%;
+}
+*/
+
+
+.btn-back {
+   background: url('http://tic.upkao.com/Public/wxappImgs/list-back.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+.btn-back:hover {
+   background: url('http://tic.upkao.com/Public/wxappImgs/list-back-hover.png') no-repeat;
+   background-size: 100% 100%;
+}
+
+.image-list {
+  display:flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: @lw;
+  height: @lh;
+  margin-top: @lmt;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-content: flex-start;
+  overflow-y: auto;
+}
+
+.image-item {
+    position: relative;
+    width:292rpx;
+    height:180rpx;
+    margin-bottom: 20rpx;
+}
+
+.image-item-info, .image-item-bg , .image-item-lock{
+    position: absolute;
+}
+
+.image-item-info {
+   top: 10rpx;
+   left: 10rpx;
+   z-index: 2;
+}
+
+.image-item-lock {
+    display:flex;
+    z-index: 3;
+    width:292rpx;
+    height:180rpx;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.1);
+    border-radius:18rpx;
 }
 
 </style>
@@ -88,15 +158,34 @@
   <swiper-item>
      <view class="container">
           <view class="content">
-              <swiper class="list" current="{{currentIndex}}" @change="listChange()">
+            <swiper hidden="{{hiddenList}}" class="list" current="{{currentIndex}}" @change="listChange()">
                   <slot></slot>
-              </swiper>
+            </swiper>
+            <block wx:if="{{hasListBtn}}">
+               <view hidden="{{!hiddenList}}" class="image-list">
+                    <view  wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="listChange({{index}})">
+                       <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
+                       <block wx:if="{{index < canUseNumber ? 1 : 0}}">
+                        <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg.png" style="width:292rpx;height:180rpx" class="image-item-bg" ></image>
+                       </block>
+                       <block wx:else>
+                       <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg-lock.png" style="width:292rpx;height:180rpx" class="image-item-bg"/>
+                       <view class="image-item-lock">
+                          <image src="http://tic.upkao.com/Public/wxappImgs/image-item-lock.png" style="width:74rpx;height:76rpx" ></image>
+                       </view>
+                       </block>
+                    </view>
+               </view>
+            </block>
           </view>
-          <view class="nav">
-              <button title="左" class="btn-left"></button>
-              <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">1/48</button>
-              <button title="右" class="btn-right"></button>
-              <button wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
+          <view class="nav" hidden="{{hiddenList}}">
+             <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="arrow(-1)"></button>
+              <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{currentIndex+1}}/{{phoneticList.length}}</button>
+              <button title="右" class="btn-right{{btnState.btnStateRight}}"  @tap="arrow(-2)"></button>
+              <button @tap="toogleList()" wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
+          </view>
+          <view hidden="{{!hiddenList}}">
+              <button @tap="toogleList()" title="返回" class="btn-back" style="width:198rpx; height:105rpx; margin-top:15rpx;"></button>
           </view>
      </view>
   </swiper-item>
@@ -106,13 +195,28 @@
 
   export default class Main extends wepy.component {
     data = {
-        currentIndex: 0
+        hiddenList: false,
+        btnState: {
+            btnStateLeft: " btn-left-disable",
+            btnStateRigth: ""
+        },
+        canUseNumber: 9
     }
     
     props = {
        hasListBtn: {
           type: Boolean,
           default: true
+       },
+
+       phoneticList: {
+           type: Array,
+           default: []
+       },
+       currentIndex: {
+            type: Number,
+            default: 0,
+            twoWay: true
        }
     }
 
@@ -120,12 +224,61 @@
 
     methods = {
        listChange(itemId, e){
-
+          if(itemId.toString().length > 0){
+                if(itemId >= this.canUseNumber){
+                    this.$parent.$parent.payShow()
+                    this.$parent.$parent.$apply()
+                    return
+                }
+                this.hiddenList = false
+                if(this.currentIndex != itemId){
+                    this.currentIndex = parseInt(itemId)
+                    this.arrow(this.currentIndex)
+                }
+                return
+          }
+          let current = e.detail.current
+          this.currentIndex = current
+          this.arrow(this.currentIndex)
+       },
+       toogleList(e){
+          this.hiddenList = !this.hiddenList
+       },
+       arrow(n, e){
+           this.arrow(n)
        }
     }
 
+    arrow(n){ 
+          n = parseInt(n)
+          if(this.currentIndex >= this.phoneticList.length-1){
+               this.btnState.btnStateLeft = ""
+               this.btnState.btnStateRight = " btn-right-disable"
+               if(this.btnState.btnStateRight.length > 0 && (n == -2 || n > 0)){
+                   return
+               }
+          } else {
+              this.btnState.btnStateLeft = ""
+              this.btnState.btnStateRight = ""
+          }
+          if(this.currentIndex <= 0){
+              this.btnState.btnStateRight = ""
+              this.btnState.btnStateLeft = "  btn-left-disable"
+              if(this.btnState.btnStateLeft.length > 0 && (n == -1 || n == 0)){
+                      return
+              }        
+          } else {
+              this.btnState.btnStateLeft = ""
+              this.btnState.btnStateRight = ""
+          }
+          if(n < 0){
+              this.currentIndex = parseInt(this.currentIndex) + ((n == -1) ? n : 1)
+          }
+    }
+
+
     onLoad () {
-      console.log(this.hasListBtn)
+       
     }
   }
 </script>

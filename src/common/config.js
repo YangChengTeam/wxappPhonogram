@@ -1,19 +1,21 @@
 const debug = true
 const host = {
-	dev: "https://www.baidu.com/",  //测试服务器
+	dev: "https://tic.upkao.com",  //测试服务器
 	pro: ""   //正式服务器
 }
 
-function getHost(){
-    return debug ? host.dev : host.pro
+function getBaseUrl(){
+    return (debug ? host.dev : host.pro) + '/Wxapp/index/'
 }
 
 function getUrl(str){
-    return getHost() + str
+    return getBaseUrl() + str + "?app_id=6"
 }
 
 const api = {
-	loginUrl : getUrl("login")
+	loginUrl : getUrl("login"),
+	phoneticList : getUrl("phonetic_list"),
+	phonetiClass: getUrl("phonetic_class")
 }
 
 export default api

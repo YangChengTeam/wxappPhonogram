@@ -70,8 +70,143 @@ swiper {
    bottom: 120rpx;
 }
 
+.pay-ppw {
+   position: fixed;
+   width: 100%;
+   height: 100%;
+   background: rgba(0,0,0,0.5);
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   align-items: center;
+   top:0;
+   left:0;
+}
+
+.pay-ppw-bg {
+    width: 702rpx;
+    height: 879rpx;
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-bg.png') no-repeat;
+    background-size: 100% 100%;
+    margin-top:50rpx;
+}
+
+.pay-content {
+    display: flex;
+    flex-direction: column;
+    height: 680rpx;
+    width: 622rpx;
+    margin-top: 160rpx;
+    margin-left:40rpx;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.pay-item {
+    display: flex;
+    flex-direction: row;
+    height: 112rpx;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 20rpx;
+}
+
+.pay-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-item-bg.png') no-repeat;
+    background-size: 100% 100%;
+    width: 552rpx;
+    height: 112rpx;
+    font-size: 18.14rpx;
+    color: #999;
+}
+
+.pay-select {
+    width: 50rpx;
+    height: 50rpx;
+
+}
+
+.pay-close {
+    width: 97rpx;
+    height: 97rpx;
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-close.png') no-repeat;
+    background-size: 100% 100%;
+    margin-top:50rpx;
+}
+
+.pay-confirm-wrap {
+    justify-content: flex-end;
+    flex-grow: 1;
+    display:flex;
+    flex-direction: column;
+}
+
+.pay-confirm {
+    width: 618rpx;
+    height: 108rpx;
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-confirm.png') no-repeat;
+    background-size: 100% 100%;
+    margin-bottom: 40rpx;
+}
+
+.pay-confirm:hover {
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-confirm-hover.png') no-repeat;
+    background-size: 100% 100%;
+}
+
+.pay-num {
+    width: 64rpx;
+    height: 65rpx;
+    margin-left:10rpx;
+}
+
+.pay-num-1 {
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-n1.png') no-repeat;
+    background-size: 100% 100%;
+}
+
+.pay-num-2 {
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-n2.png') no-repeat;
+    background-size: 100% 100%;
+}
+
+.pay-num-3 {
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-n3.png') no-repeat;
+    background-size: 100% 100%;
+}
+
+.pay-num-4 {
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-n4.png') no-repeat;
+    background-size: 100% 100%;
+}
+
+.pay-title {
+  color: #b05739;
+  font-size: 30rpx;
+}
+
+.pay-price {
+   margin-right: 10rpx;
+}
+
+.pay-new-price {
+   color: #fe5655;
+   font-size: 36rpx;
+}
+
+.pay-old-price {
+   font-size: 18rpx;
+   text-align: right;
+}
+
 </style>
 <template>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{currentIndex < 2}}"></video>
     <view class="main-bg"></view>
     <view class="menu">
         <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
@@ -85,7 +220,32 @@ swiper {
         <interest></interest>
     </swiper>
 
-    <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad">
+    <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
+    <view class="pay-ppw" hidden="{{hiddenPayView}}">
+          <view class="pay-ppw-bg">
+             <view class="pay-content">
+                <view class="pay-item">    
+                   <view class="pay-info">
+                        <view class="pay-num pay-num-1"></view>
+                        <view class="pay-desc">
+                           <view class="pay-title">拼音课堂</view>
+                           <view class="pay-simple-desc">每天十分钟，十天就会读拼音</view>
+                        </view>
+                        <view class="pay-price">
+                            <view class="pay-new-price">¥39.00</view>
+                            <view class="pay-old-price">原价¥59元</view>
+                        </view>
+                   </view>
+                   <image class="pay-select" src="http://tic.upkao.com/Public/wxappImgs/pay-select-bg.png"></image>
+                </view>
+                 
+                <view class="pay-confirm-wrap">
+                <button class="pay-confirm"></button>
+                </view>
+            </view>
+          </view>
+          <button class="pay-close" @tap="payClose()"></button>
+    </view>
 </template>
 
 <script>
@@ -98,6 +258,9 @@ swiper {
 
   import util from '../common/util.js'
   import global from '../common/global.js'
+  import api from '../common/config.js'
+  import req from '../common/request.js'
+
 
   export default class Index extends wepy.page {
     config = {
@@ -112,14 +275,16 @@ swiper {
     mixins = []
 
     data = {
-        currentIndex: 0
+        currentIndex: 0,
+        hiddenPayView: true,
+        currentVideoSrc: ''
     }
 
     computed = {}
 
     methods = {
         change(itemId , e){
-            if(itemId != ""){
+            if(itemId.toString().length > 0){
                 if(this.currentIndex != itemId){
                     this.currentIndex = itemId
                 }
@@ -127,22 +292,20 @@ swiper {
             }
             let current = e.detail.current
             this.currentIndex = current
+        },
+        payClose(e){
+            this.hiddenPayView = true
         }
+    }
+
+    payShow(){
+        this.hiddenPayView = false
     }
 
     events = {}
 
-    onPrefetch(params){
-      
-    }
-
-    onRoute(){
-       
-    }
-
     async onLoad(params, data) {
-        let [err, ldata] = await util.login()
-        console.log(global.userInfo)
+
     }
   }
 </script>

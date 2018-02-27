@@ -6,12 +6,13 @@ import sha256 from 'sha256'  //npm install --save sha256
 import global from '../common/global.js'
 
 export default {	
-	async get(url){
+	async get(url, params){
 		let token = md5(url+global.session)
 		return await to(wepy.request({
 			url: url,
 			method: 'GET',
 			dataType: 'json',
+			data: params,
 			header: {
 				Session: global.session,
 			   	Token: md5(sha256(token))

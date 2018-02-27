@@ -7,6 +7,10 @@
 import wepy from 'wepy'
 import 'wepy-async-function'
 
+import util from '@/common/util.js'
+import global from '@/common/global.js'
+import api from '@/common/config.js'
+import req from '@/common/request.js'
 
 export default class extends wepy.app {
   config = {
@@ -28,8 +32,21 @@ export default class extends wepy.app {
     this.use('promisify')
   }
 
-  onLaunch() {
-      
+  globalData = {
+  }
+
+  async onLaunch() {
+      let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
+      let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
+      if(phoneticList.data.code && phoneticList.data.code == 1){
+          this.globalData.phoneticList = phoneticList.data.data.list
+      }
+      if(phonetiClass.data.code && phonetiClass.data.code == 1){
+          this.globalData.phonetiClass = phonetiClass.data.data
+      }
+      if(this.render){
+          this.render()
+      }
   }
 }
 </script>

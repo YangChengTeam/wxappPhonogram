@@ -14,7 +14,7 @@
     -webkit-text-stroke: 1px #c94801;
     text-shadow:  #c94801 1px 1px 5px;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 36rpx;
 }
 
 .read2me-word-image > image {

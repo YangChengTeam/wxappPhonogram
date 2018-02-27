@@ -47,19 +47,22 @@
     text-shadow:  #c94801 1px 1px 5px;
     color: #fff;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 36rpx;
 }
 
 .interest-desc-desc {
     color: #999;
     margin-top: 20rpx;
+    max-height: 120rpx;
+    overflow-x: auto;
+    font-size: 28rpx;
 }
 
 .interest-desc-strong {
     color: #c94801;
     font-weight: bold;
-    font-size: 16px;
-    margin-top: 20rpx;
+    font-size: 28rpx;
+    margin-top: 18rpx;
 }
 
 .interest-desc-price {
@@ -68,7 +71,7 @@
 
 .new-price {
     color: #ff0000;
-    font-size: 30px;
+    font-size: 48rpx;
 }
 
 .old-price {
@@ -88,9 +91,9 @@
         <view class="interest-desc">
            <view class="interest-desc-inner">
                 <view class="interest-desc-title">趣味音标课</view>
-                <view class="interest-desc-desc">在学习完拼音课堂之后， 快来学习标课堂吧</view>
+                <view class="interest-desc-desc">在学习完拼音课堂之后， 快来学习标课堂吧,在学习完拼音课堂之后，在学习完拼音课堂之后，在学习完拼音课堂之后习完拼音课堂之后习完拼音课堂之后，</view>
                 <view class="interest-desc-strong">单词能力提高必选的12节课</view>
-                <view class="interest-desc-price">迎新年物价<text class="new-price">29</text>元<text class="old-price">原价60元</text></view>
+                <view class="interest-desc-price">迎新年特价<text class="new-price">29</text>元<text class="old-price">原价60元</text></view>
           </view>
         </view>
         

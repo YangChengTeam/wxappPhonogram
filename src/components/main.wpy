@@ -248,9 +248,9 @@
        toogleList(e){
           this.isHiddenList = !this.isHiddenList
           if(this.isHiddenList){
-              this.$parent.$parent.isShowVideo = false
+              this.$parent.$parent.hideVideo()
           } else {
-              this.$parent.$parent.isShowVideo = true
+              this.$parent.$parent.showVideo()
           }
           this.$parent.$parent.$apply()
 
@@ -263,9 +263,9 @@
     changeData(){
          if(this.$parent.$parent.currentIndex != 1){
             this.$parent.$parent.currentVideoSrc = this.phoneticList[this.currentIndex].video
-            this.$parent.$parent.isShowVideo = true
+            this.$parent.$parent.showVideo()
          }  else {
-            this.$parent.$parent.isShowVideo = false
+            this.$parent.$parent.hideVideo()
          }
          this.$parent.$parent.$apply()
          this.clickArrow(this.currentIndex)

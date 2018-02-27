@@ -213,7 +213,9 @@ swiper {
 }
 </style>
 <template>
-    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}"></video>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowLearnVideo}}"></video>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}"></video>
+
     <view class="main-bg"></view>
     <view class="menu">
         <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
@@ -288,7 +290,8 @@ swiper {
         phoneticList: [],
         phonetiClassList: [],
         phonetiClassInfo: {},
-        isShowVideo: false
+        isShowLearnVideo: false,
+        isShowInterestVideo: false
     }
 
     computed = {
@@ -322,12 +325,23 @@ swiper {
          } else if(this.currentIndex == 2){
               this.currentVideoSrc = this.phonetiClassList[0].video
          }
-         this.isShowVideo = this.currentIndex == 0 || this.currentIndex == 2
+         this.showVideo()
          this.$apply()
     }
 
     showPayView(){
         this.isShowPayView = true
+    }
+
+    showVideo(){
+         this.isShowLearnVideo = this.currentIndex == 0 
+         this.isShowInterestVideo = this.currentIndex == 2
+         
+    }
+
+    hideVideo(){
+       this.isShowLearnVideo = false
+       this.isShowInterestVideo = false
     }
 
     events = {}
@@ -336,11 +350,12 @@ swiper {
        let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
        let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
        if(phoneticList.data.code && phoneticList.data.code == 1 ){
-          this.isShowVideo = this.currentIndex == 0 || this.currentIndex == 2
+          this.showVideo()
           this.phoneticList = phoneticList.data.data.list
           this.currentVideoSrc = this.phoneticList[0].video
        }
        if(phonetiClass.data.code && phonetiClass.data.code == 1){
+          this.showVideo()
           this.phonetiClassInfo = phonetiClass.data.data.info
           this.phonetiClassList = phonetiClass.data.data.list
        }

@@ -165,7 +165,7 @@
                <view hidden="{{!isHiddenList}}" class="image-list">
                     <view  wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
                        <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
-                       <block wx:if="{{index < canUseNumber ? 1 : 0}}">
+                       <block wx:if="{{(canSeeImageList|| index < canUseNumber) ? 1 : 0}}">
                         <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg.png" style="width:292rpx;height:180rpx" class="image-item-bg" ></image>
                        </block>
                        <block wx:else>
@@ -200,8 +200,8 @@
             btnStateLeft: " btn-left-disable",
             btnStateRigth: ""
         },
-        tipIndex: 0
-
+        tipIndex: 0,
+        canSeeImageList: false
     }
     
     props = {
@@ -273,6 +273,8 @@
           } else {
               this.$parent.$parent.showVideo()
           }
+          this.canSeeImageList = this.$parent.$parent.canSeeImageList()
+          this.$apply()
           this.$parent.$parent.$apply()
 
        },
@@ -282,7 +284,6 @@
     }
 
     back(){
-        console.log(this.canUseNumber)
        if(this.currentIndex >= this.canUseNumber - 1){
           this.currentIndex = this.canUseNumber - 1
           this.$apply()
@@ -317,7 +318,6 @@
     }
 
     clickArrow(n){
-
           n = parseInt(n)
           if(n < 0){
               if((n == -1 && this.currentIndex == 0) || (n == -2 && this.currentIndex >= this.phoneticList.length - 1)){

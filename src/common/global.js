@@ -1,4 +1,5 @@
 export default {
 	session: '',
-	userInfo: {}
+	userInfo: {},
+	vips: [6, 7]
 }

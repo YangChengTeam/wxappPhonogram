@@ -128,7 +128,7 @@ swiper {
 }
 
 .pay-desc {
-    width: 56%;
+    width: 57%;
 }
 
 .pay-select {
@@ -220,7 +220,7 @@ swiper {
 }
 </style>
 <template>
-    <video src="{{currentVideoSrc}}" @waiting="waiting()" @error="error()" class="key-video" wx:if="{{isShowLearnVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowLearnVideo}}" poster="{{currentVideoPoster}}"></video>
     <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}" poster="{{currentVideoPoster}}" bindplay="play()" ></video>
 
     <audio id="audio" hidden="true"></audio>
@@ -254,7 +254,7 @@ swiper {
                             <view class="pay-old-price">原价¥{{item.price2Int}}元</view>
                         </view>
                    </view>
-                   <image class="pay-select" src="http://tic.upkao.com/Public/wxappImgs/pay-select-bg.png"></image>
+                   <image @tap="selectVip({{index}})" class="pay-select" src="{{item.selectImg}}"></image>
                 </view>
                  
                 <view class="pay-confirm-wrap">
@@ -278,7 +278,7 @@ swiper {
   import global from '../common/global.js'
   import api from '../common/config.js'
   import req from '../common/request.js'
-
+  
 
   export default class Index extends wepy.page {
     config = {
@@ -312,7 +312,8 @@ swiper {
         phoneticListCanUseNumber:9,
         isShowPayViewWhenanimationFinish: true,
         showViewTimer: null,
-        currentAudioSrc: ''
+        currentAudioSrc: '',
+        currentPayInfo: {}
     }
 
     computed = {
@@ -320,11 +321,6 @@ swiper {
     }
 
     methods = {
-        error(e){
-        },
-        waiting(e){
-           console.log(e)
-        },
         animationFinish(e){
            if(this.isShowPayViewWhenanimationFinish && !this.isShowPay){
               this.showVideo()
@@ -357,23 +353,25 @@ swiper {
                this.$invoke("interest", "back")
             }
             this.showVideo()
-        },playEnd(e){
-            this.$invoke('learn', 'playEnd')
+        },
+        selectVip(index, e){
+            if(this.vipList[index].isVip){
+                return
+            }
+            this.currentPayInfo = this.vipList[index]
+            this.vipList.forEach((item, i)=>{
+                if(index == i ){
+                    if(!item.isVip){
+                        item.selectImg = "http://tic.upkao.com/Public/wxappImgs/pay-select.png"
+                    }
+                    return
+                }
+                if(!item.isVip){
+                    item.selectImg = "http://tic.upkao.com/Public/wxappImgs/pay-select-bg.png"
+                }
+            })
+            console.log(this.currentPayInfo)
         }
-    }
-
-    isSuperVip(){
-
-    }
-
-    isLearnVip(){
-
-    }
-
-
-
-    isVip(){
-       return false
     }
 
     touchStart(e){
@@ -389,6 +387,7 @@ swiper {
             this.scrollState.isRight = true
             this.scrollState.isLeft = false
         }
+        this.clearVideoTimeout()
         this.hideVideo()
         this.$apply()
     }
@@ -406,8 +405,32 @@ swiper {
          this.showVideo()
     }
 
+    canSeeLearn(){
+        return false
+    }
+    
+    canSeeRead2me(){
+        return false
+    }
+
+    canSeeInterest(){
+        return false
+    }
+
+    canSeeImageList(){
+       return false
+    }
+
     isShowPay(index){
-       if((index >= this.phoneticListCanUseNumber && this.currentIndex < 2) || (index >= this.phonetiClassCanUseNumber && this.currentIndex == 2)){
+       if(this.currentIndex == 0 && !this.canSeeLearn() && index >= this.phoneticListCanUseNumber){
+           this.isShowPayViewWhenanimationFinish = false
+           return true;
+       }
+       else if(this.currentIndex == 1 && !this.canSeeRead2me() && index >= this.phoneticListCanUseNumber){
+           this.isShowPayViewWhenanimationFinish = false
+           return true;
+       }
+       else if(this.currentIndex == 2 && !this.canSeeInterest() && index >= this.phonetiClassCanUseNumber){
            this.isShowPayViewWhenanimationFinish = false
            return true;
        }
@@ -424,11 +447,15 @@ swiper {
         this.isShowPayView = true
     }
 
+    clearVideoTimeout(){
+        if(this.showViewTimer){
+          clearTimeout(this.showViewTimer)
+          this.showViewTimer = null
+       }
+    }
 
     showVideo(){
-       if(this.showViewTimer){
-          clearTimeout(this.showViewTimer)
-       }
+       this.clearVideoTimeout()
        this.showViewTimer = setTimeout(()=>{
             this.isShowLearnVideo = this.currentIndex == 0 
             this.isShowInterestVideo = this.currentIndex == 2
@@ -436,7 +463,7 @@ swiper {
                 this.$invoke('learn', 'hideVideo');
             }
             this.$apply()
-            clearTimeout(this.showViewTimer)
+            this.clearVideoTimeout()
        }, 500)
     }
 
@@ -462,17 +489,18 @@ swiper {
         })
 
         this.audioCtx.onError((res)=>{
-            console.log(res)
+            this.audioCtx.play()
         })
     }
 
-    async onLoad(params, data) {
+    async getPhoneticList(){
        wepy.showLoading({
           mask: true,
           title: '正在加载...'
        })
        let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
-       if(phoneticList.data.code && phoneticList.data.code == 1 ){
+
+       if(phoneticList.data.data && phoneticList.data.data.list && phoneticList.data.data.list.length > 0){
           this.showVideo()
           this.phoneticList = phoneticList.data.data.list
           this.phoneticList.forEach((item)=>{
@@ -481,30 +509,61 @@ swiper {
                })
           })
           this.currentVideoSrc = this.phoneticList[0].video
-       }
-       this.$apply()
+          this.$apply()
+          this.$nextTick().then(() => {
+              wepy.hideLoading()
+          });
+       } 
+    }
 
-       this.$nextTick().then(() => {
-          wepy.hideLoading()
-       });
-       
-
+    async getPhonetiClass(){
        let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
-       if(phonetiClass.data.code && phonetiClass.data.code == 1){
+       if(phonetiClassErr) {
+          return
+       }
+       if(phonetiClass.data.data && phonetiClass.data.data.list && phonetiClass.data.data.list.length > 0){
           this.showVideo()
           this.phonetiClassInfo = phonetiClass.data.data.info
           this.phonetiClassList = phonetiClass.data.data.list
+          this.$apply()
        }
-       this.$apply()
+    }
 
+    async getVipList(){
        let [vipListErr, vipList] =  await req.get(api.vipList)
+       if(vipListErr){
+          return
+       }
        if(vipList.data.data){
             this.vipList = vipList.data.data.vip_list
             this.vipList.forEach(item=>{
                 item.real_price2Int = parseInt(item.real_price)
                 item.price2Int = parseInt(item.price)
+                item.isVip = false
+                global.vips.forEach(vipId=>{
+                    if(vipId == item.id){
+                        item.isVip = true
+                    }
+                })
+                if(item.isVip){
+                    item.selectImg = "http://tic.upkao.com/Public/wxappImgs/pay-select-disable.png"
+                }else{
+                    item.selectImg = "http://tic.upkao.com/Public/wxappImgs/pay-select-bg.png"
+                }
             })
+            this.vipList[0]['selectImg'] = "http://tic.upkao.com/Public/wxappImgs/pay-select.png"
+            this.currentPayInfo = this.vipList[0]
        }
+    }
+
+    async onLoad(params, data) {
+      
+       await this.getPhoneticList()
+
+       await this.getPhonetiClass()
+
+       await this.getVipList()
+       
     }
 
 

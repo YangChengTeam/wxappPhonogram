@@ -19,4 +19,6 @@ const api = {
 	vipList: getUrl("vip_list")	
 }
 
+
+
 export default api

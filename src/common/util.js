@@ -20,5 +20,5 @@ export default {
             }, userInfo.rawData))
          }
          return [{errMsg: 'login fail'}, null]
-     }
+    }
 }

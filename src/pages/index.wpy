@@ -391,20 +391,18 @@ swiper {
     //触摸移动
     touchMove(e){
         //根据触摸时间和移动距离来判定用户是否真的在做切换操作
+        let touchMoveX = e.touches[0].pageX
 
         let diff = new Date().getTime() - this.scrollState.startTime
-        if(diff < 200){
-            return
-        } else {
+        let offset = Math.abs(touchMoveX - this.scrollState.pageX) 
+        if(diff < 200 || offset > 5){
             this.clearVideoTimeout()
             this.hideVideo()
             this.$apply()
+        } else {
+            return
         }
-        let touchMoveX = e.touches[0].pageX
-
-        let offset = 80
-
-        if(Math.abs(touchMoveX - this.scrollState.pageX) < offset){
+        if(offset < 30){
             return
         }
 
@@ -525,7 +523,7 @@ swiper {
 
     
 
-    //接口
+    //接口  注 缓存严重影响性能
 
     //获取拼音列表
     async getPhoneticList(){
@@ -535,9 +533,27 @@ swiper {
        })
        let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
 
-       if(phoneticList.data.data && phoneticList.data.data.list && phoneticList.data.data.list.length > 0){
+       if(!phoneticListErr && phoneticList.data.data && phoneticList.data.data.list && phoneticList.data.data.list.length > 0){
+          this.setPhoneticList(phoneticList.data.data.list)
+          // wepy.setStorage({
+          //   key: api.phoneticList,
+          //   data: this.phoneticList
+          // })
+          return
+       } 
+
+       // wepy.getStorage({
+       //    key : api.phoneticList
+       // }).then((data)=>{
+       //     console.log(data)
+       //     this.setPhoneticList(data.data)
+       // })
+       
+    }
+
+    setPhoneticList(phoneticList){
           this.showVideo()
-          this.phoneticList = phoneticList.data.data.list
+          this.phoneticList = phoneticList
           this.phoneticList.forEach((item)=>{
                item.example.forEach((example)=>{
                    example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)
@@ -548,31 +564,62 @@ swiper {
           this.$nextTick().then(() => {
               wepy.hideLoading()
           });
-       } 
     }
   
     //获取趣味音标
     async getPhonetiClass(){
        let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
-       if(phonetiClassErr) {
+       
+       if(!phonetiClassErr && phonetiClass.data.data && phonetiClass.data.data.list && phonetiClass.data.data.list.length > 0){
+          this.setPhonetiClass(phonetiClass.data.data)
+         
+          // wepy.setStorage({
+          //        key: api.phonetiClass
+          //        data: honetiClass.data.data
+          // })  
           return
        }
-       if(phonetiClass.data.data && phonetiClass.data.data.list && phonetiClass.data.data.list.length > 0){
-          this.showVideo()
-          this.phonetiClassInfo = phonetiClass.data.data.info
-          this.phonetiClassList = phonetiClass.data.data.list
-          this.$apply()
-       }
+
+
+      // wepy.getStorage({
+      //     key : api.phonetiClass
+      //  }).then((data)=>{
+      //      this.setPhonetiClass(data.data)
+      //  })
+  
     } 
+
+    setPhonetiClass(data){
+        this.showVideo()
+        this.phonetiClassInfo = data.info
+        this.phonetiClassList = data.list
+        this.$apply()
+    }
    
    //获取会员商品信息
     async getVipList(){
        let [vipListErr, vipList] =  await req.get(api.vipList)
-       if(vipListErr){
-          return
+       
+       if(!vipListErr && vipList.data.data){
+            this.setVipList(vipList.data.data.vip_list)
+            wepy.setStorageSync(api.vipList, this.vipList)
+
+            // wepy.setStorage({
+            //      key: api.vipList,
+            //      data: this.vipList
+            //  })
+            return
        }
-       if(vipList.data.data){
-            this.vipList = vipList.data.data.vip_list
+
+       // wepy.getStorage({
+       //    key : api.vipList
+       // }).then((data)=>{
+       //     this.setVipList(data.data)
+       // })
+    }
+
+    setVipList(vipList){
+            this.vipList = vipList
             this.vipList.forEach(item=>{
                 item.real_price2Int = parseInt(item.real_price)
                 item.price2Int = parseInt(item.price)
@@ -590,7 +637,6 @@ swiper {
             })
             this.vipList[0]['selectImg'] = "http://tic.upkao.com/Public/wxappImgs/pay-select.png"
             this.currentPayInfo = this.vipList[0]
-       }
     }
 
     async onLoad(params, data) {

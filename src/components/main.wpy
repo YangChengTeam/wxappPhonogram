@@ -249,8 +249,8 @@
           let current = e.detail.current                      
           this.currentNumber = current
           if(this.isShowPay(current)){
-              this.currentIndex = current          
               this.showPayView()
+              this.currentIndex = current          
               return
           } else {
              this.changeData()

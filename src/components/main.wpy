@@ -295,11 +295,13 @@
     }
 
     showPayView(){
+        this.$parent.$parent.clearVideoTimeout()
         this.$parent.$parent.hideVideo()
         this.$parent.$parent.showPayView()
         this.$parent.$parent.$apply()
     }
 
+    
     hideVideo(){
        if(this.isHiddenList){
           this.$parent.$parent.hideVideo()
@@ -317,6 +319,7 @@
          this.clickArrow(this.currentIndex)
     }
 
+    //点击左右按钮
     clickArrow(n){
           n = parseInt(n)
           if(n < 0){

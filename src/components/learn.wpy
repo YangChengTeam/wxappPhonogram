@@ -206,6 +206,7 @@
        }
     }
 
+    //播放音频
     playing(){
        if(this.audioType.toString().indexOf('-') == -1){
           this.readImgSrc = "http://tic.upkao.com/Public/wxappImgs/reading.gif"
@@ -213,6 +214,7 @@
        } 
     }
 
+    //音频播放结束
     playEnd(){
       if(this.audioType.toString().indexOf('-') == -1){
           this.readImgSrc = "http://tic.upkao.com/Public/wxappImgs/click2read.png"
@@ -223,10 +225,12 @@
       this.$apply()
     }
 
+    //非会员切换swiper之后退回上一个
     back(){
        this.$invoke("main", "back")
     }
 
+    //隐藏视频
     hideVideo(){
         this.$invoke('main', 'hideVideo');
     }

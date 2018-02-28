@@ -232,7 +232,7 @@ swiper {
         <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
 
-    <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish" duration="300">
+    <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish()" duration="300">
         <learn :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></learn>
         <read2me :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></read2me>
         <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :canUseNumber.sync="phonetiClassCanUseNumber"></interest>
@@ -293,27 +293,33 @@ swiper {
     mixins = []
 
     data = {
-        currentIndex: 0,
-        isShowPayView: false,
-        currentVideoSrc: '',
-        currentVideoPoster: '',
+        currentIndex: 0,      //当前swiper index
+        currentVideoSrc: '',  //当前视频路径
+        currentVideoPoster: '', //当前视频封面
+        currentAudioSrc: '', //当前音频路径
+        currentPayInfo: {},  //当前选择的支付信息
+
         phoneticList: [],
         phonetiClassList: [],
-        vipList: [],
         phonetiClassInfo: {},
+        vipList: [],
+
+
         isShowLearnVideo: false,
         isShowInterestVideo: false,
+        isShowPayView: false,
+        isShowPayViewWhenanimationFinish: true,
+        showViewTimer: null,
+
         scrollState: {
             pageX: 0,
             isLeft: false,
             isRight: false
         },
+
         phonetiClassCanUseNumber: 1,
-        phoneticListCanUseNumber:9,
-        isShowPayViewWhenanimationFinish: true,
-        showViewTimer: null,
-        currentAudioSrc: '',
-        currentPayInfo: {}
+        phoneticListCanUseNumber:9
+        
     }
 
     computed = {
@@ -321,12 +327,14 @@ swiper {
     }
 
     methods = {
+        //swiper动画结束
         animationFinish(e){
-           if(this.isShowPayViewWhenanimationFinish && !this.isShowPay){
+           if(this.isShowPayViewWhenanimationFinish){
               this.showVideo()
               this.$apply()
            } 
         },
+        //swiper切换
         change(itemId , e){
             if(itemId.toString().length > 0){
                 if(this.currentIndex != itemId){
@@ -342,6 +350,7 @@ swiper {
             this.currentIndex = current
             this.changeData()
         },
+        //关闭支付窗口
         closePayView(e){
             this.isShowPayView = false
             this.isShowPayViewWhenanimationFinish = true
@@ -354,6 +363,7 @@ swiper {
             }
             this.showVideo()
         },
+        //选择会员购买
         selectVip(index, e){
             if(this.vipList[index].isVip){
                 return
@@ -374,10 +384,12 @@ swiper {
         }
     }
 
+    //触摸开始
     touchStart(e){
        this.scrollState.pageX = e.touches[0].pageX
     }
 
+    //触摸移动
     touchMove(e){
         let touchMoveX = e.touches[0].pageX;
         if(touchMoveX > this.scrollState.pageX){
@@ -388,11 +400,13 @@ swiper {
             this.scrollState.isLeft = false
         }
         this.clearVideoTimeout()
+        this.audioCtx.pause()
         this.$invoke('learn', 'playEnd')
         this.hideVideo()
         this.$apply()
     }
-  
+    
+    //切换数据
     changeData(){
         let info;
         if(this.currentIndex == 0){
@@ -406,22 +420,29 @@ swiper {
          this.showVideo()
     }
 
+    //vip检测
+
+    //能看学音标模块
     canSeeLearn(){
         return false
     }
-    
+      
+    //能看学跟我读
     canSeeRead2me(){
         return false
     }
 
+    //能看趣味音标
     canSeeInterest(){
         return false
     }
-
+    
+    //能看图片列表
     canSeeImageList(){
        return false
     }
 
+    //支付
     isShowPay(index){
        if(this.currentIndex == 0 && !this.canSeeLearn() && index >= this.phoneticListCanUseNumber){
            this.isShowPayViewWhenanimationFinish = false
@@ -438,16 +459,22 @@ swiper {
        return false
     }
 
+    showPayView(){
+        this.isShowPayView = true
+    }
+
+
+    //视频
+
+    //设置视频信息
     setVideoInfo(info){
         if(!info) return
         this.currentVideoSrc = info.video
         this.currentVideoPoster = info.cover
     }
 
-    showPayView(){
-        this.isShowPayView = true
-    }
 
+    //清除视频显示定时器
     clearVideoTimeout(){
         if(this.showViewTimer){
           clearTimeout(this.showViewTimer)
@@ -455,6 +482,7 @@ swiper {
        }
     }
 
+    //显示视频
     showVideo(){
        this.clearVideoTimeout()
        this.showViewTimer = setTimeout(()=>{
@@ -465,35 +493,27 @@ swiper {
             }
             this.$apply()
             this.clearVideoTimeout()
-       }, 500)
+       }, 1000)
     }
-
+   
+    //隐藏视频
     hideVideo(){
        this.isShowLearnVideo = false
        this.isShowInterestVideo = false
     }
 
+
+    //播放视频
     play(src){
         this.audioCtx.src = src
         this.audioCtx.play()
     }
 
-    onReady(e) {
-        this.audioCtx = wx.createInnerAudioContext('audio')
-      
-        this.audioCtx.onEnded(()=>{
-           this.$invoke('learn', 'playEnd')
-        })
+    
 
-        this.audioCtx.onPlay(()=>{
-           this.$invoke('learn', 'playing')
-        })
+    //接口
 
-        this.audioCtx.onError((res)=>{
-            this.audioCtx.play()
-        })
-    }
-
+    //获取拼音列表
     async getPhoneticList(){
        wepy.showLoading({
           mask: true,
@@ -516,7 +536,8 @@ swiper {
           });
        } 
     }
-
+  
+    //获取趣味音标
     async getPhonetiClass(){
        let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
        if(phonetiClassErr) {
@@ -528,8 +549,9 @@ swiper {
           this.phonetiClassList = phonetiClass.data.data.list
           this.$apply()
        }
-    }
-
+    } 
+   
+   //获取会员商品信息
     async getVipList(){
        let [vipListErr, vipList] =  await req.get(api.vipList)
        if(vipListErr){
@@ -567,6 +589,22 @@ swiper {
 
        await this.getVipList()
        
+    }
+
+    onReady(e) {
+        this.audioCtx = wx.createInnerAudioContext('audio')
+      
+        this.audioCtx.onEnded(()=>{
+           this.$invoke('learn', 'playEnd')
+        })
+
+        this.audioCtx.onPlay(()=>{
+           this.$invoke('learn', 'playing')
+        })
+
+        this.audioCtx.onError((res)=>{
+            this.audioCtx.play()
+        })
     }
 
 

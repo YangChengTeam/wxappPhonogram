@@ -29,7 +29,8 @@ export default {
 			dataType: 'json',
 			header: {
 				Session: global.session,
-			   	Token: md5(sha256(token))
+			   	Token: md5(sha256(token)),
+			   	'content-type':'application/x-www-form-urlencoded'
 			}
 		}))
 	}

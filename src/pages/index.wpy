@@ -278,7 +278,7 @@ swiper {
   import global from '../common/global.js'
   import api from '../common/config.js'
   import req from '../common/request.js'
-  
+
 
   export default class Index extends wepy.page {
     config = {
@@ -388,6 +388,7 @@ swiper {
             this.scrollState.isLeft = false
         }
         this.clearVideoTimeout()
+        this.$invoke('learn', 'playEnd')
         this.hideVideo()
         this.$apply()
     }
@@ -557,6 +558,8 @@ swiper {
     }
 
     async onLoad(params, data) {
+
+       console.log(await util.login())
       
        await this.getPhoneticList()
 

@@ -13,7 +13,7 @@ function getUrl(str){
 }
 
 const api = {
-	loginUrl : getUrl("login"),
+	loginUrl : getUrl("init"),
 	phoneticList : getUrl("phonetic_list"),
 	phonetiClass: getUrl("phonetic_class"),
 	vipList: getUrl("vip_list")	

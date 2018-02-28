@@ -16,9 +16,12 @@ export default {
             global.userInfo = userInfo.rawData
             return await req.post(api.loginUrl, Object.assign({
             	 encryptedData: userInfo.encryptedData,
+                 code: res.code,
             	 iv: userInfo.iv
             }, userInfo.rawData))
          }
          return [{errMsg: 'login fail'}, null]
     }
+
+
 }

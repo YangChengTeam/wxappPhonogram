@@ -141,7 +141,7 @@
                    <image src="{{readImgSrc}}"  @tap="play({{index}})" />
                </view>
                <view class="learn-word-info">
-                   <image src="{{item.img}}" style="width:218rpx;height:126rpx"/>
+                   <image src="{{item.img}}" style="width:218rpx;height:126rpx" />
                    <view class="learn-word-samples">
                        <block wx:for="{{item.example}}"  wx:for-index="exampleIndex" wx:for-item="example" wx:key="id" class="image-item">
                           <view @tap="play({{index}}-{{exampleIndex}})" class="learn-word-sample{{example.animation ? example.animation : ''}}">

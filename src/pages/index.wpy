@@ -227,9 +227,9 @@ swiper {
 
     <view class="main-bg"></view>
     <view class="menu">
-        <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
-        <button @tap="change(1)" class="menu-read2me{{ currentIndex == 1 ? ' menu-read2me-hover' : ''}}" title="跟我读"></button>
-        <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
+        <button @tap="change(0)" class="menu-learn{{ currentNumber == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
+        <button @tap="change(1)" class="menu-read2me{{ currentNumber == 1 ? ' menu-read2me-hover' : ''}}" title="跟我读"></button>
+        <button @tap="change(2)" class="menu-interest{{ currentNumber == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
 
     <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish()" duration="300">
@@ -238,7 +238,7 @@ swiper {
         <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :canUseNumber.sync="phonetiClassCanUseNumber"></interest>
     </swiper>
 
-    <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
+    <image wx:if="{{currentNumber == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
     <view class="pay-ppw" wx:if="{{isShowPayView}}">
           <view class="pay-ppw-bg">
              <view class="pay-content">
@@ -294,6 +294,7 @@ swiper {
 
     data = {
         currentIndex: 0,      //当前swiper index
+        currentNumber: 0,
         currentVideoSrc: '',  //当前视频路径
         currentVideoPoster: '', //当前视频封面
         currentAudioSrc: '', //当前音频路径
@@ -314,7 +315,8 @@ swiper {
         scrollState: {
             pageX: 0,
             isLeft: false,
-            isRight: false
+            isRight: false,
+            startTime: 0
         },
 
         phonetiClassCanUseNumber: 1,
@@ -331,34 +333,30 @@ swiper {
         animationFinish(e){
            if(this.isShowPayViewWhenanimationFinish){
               this.showVideo()
-              this.$apply()
            } 
         },
         //swiper切换
         change(itemId , e){
-            if(itemId.toString().length > 0){
-                if(this.currentIndex != itemId){
-                    this.currentIndex = itemId
-                }
-                this.changeData()
-                return
-            }
             let current = e.detail.current
-            if(this.currentIndex == current) {
-               return
+            if(itemId.toString().length > 0){
+                if(this.currentIndex == itemId){
+                     return
+                }
+                current = itemId
+                this.currentIndex = itemId
             }
-            this.currentIndex = current
+            this.currentNumber = current
             this.changeData()
         },
         //关闭支付窗口
         closePayView(e){
             this.isShowPayView = false
             this.isShowPayViewWhenanimationFinish = true
-            if(this.currentIndex == 0){
+            if(this.currentNumber == 0){
                this.$invoke("learn", "back")
-            }else if(this.currentIndex == 1){
+            }else if(this.currentNumber == 1){
                this.$invoke("read2me", "back")
-            }else if(this.currentIndex == 2){
+            }else if(this.currentNumber == 2){
                this.$invoke("interest", "back")
             }
             this.showVideo()
@@ -387,11 +385,29 @@ swiper {
     //触摸开始
     touchStart(e){
        this.scrollState.pageX = e.touches[0].pageX
+       this.scrollState.startTime = new Date().getTime()
     }
 
     //触摸移动
     touchMove(e){
-        let touchMoveX = e.touches[0].pageX;
+        //根据触摸时间和移动距离来判定用户是否真的在做切换操作
+
+        let diff = new Date().getTime() - this.scrollState.startTime
+        if(diff < 200){
+            return
+        } else {
+            this.clearVideoTimeout()
+            this.hideVideo()
+            this.$apply()
+        }
+        let touchMoveX = e.touches[0].pageX
+
+        let offset = 80
+
+        if(Math.abs(touchMoveX - this.scrollState.pageX) < offset){
+            return
+        }
+
         if(touchMoveX > this.scrollState.pageX){
             this.scrollState.isLeft = true
             this.scrollState.isRight = false
@@ -399,23 +415,21 @@ swiper {
             this.scrollState.isRight = true
             this.scrollState.isLeft = false
         }
-        this.clearVideoTimeout()
+
         this.audioCtx.pause()
         this.$invoke('learn', 'playEnd')
-        this.hideVideo()
-        this.$apply()
+        
     }
     
     //切换数据
     changeData(){
         let info;
-        if(this.currentIndex == 0){
+        if(this.currentNumber == 0){
              info = this.phoneticList[0]
-         } else if(this.currentIndex == 2){
+         } else if(this.currentNumber == 2){
              info = this.phonetiClassList[0]
          }
          this.hideVideo()
-         this.$apply()
          this.setVideoInfo(info)
          this.showVideo()
     }
@@ -444,15 +458,15 @@ swiper {
 
     //支付
     isShowPay(index){
-       if(this.currentIndex == 0 && !this.canSeeLearn() && index >= this.phoneticListCanUseNumber){
+       if(this.currentNumber == 0 && !this.canSeeLearn() && index >= this.phoneticListCanUseNumber){
            this.isShowPayViewWhenanimationFinish = false
            return true;
        }
-       else if(this.currentIndex == 1 && !this.canSeeRead2me() && index >= this.phoneticListCanUseNumber){
+       else if(this.currentNumber == 1 && !this.canSeeRead2me() && index >= this.phoneticListCanUseNumber){
            this.isShowPayViewWhenanimationFinish = false
            return true;
        }
-       else if(this.currentIndex == 2 && !this.canSeeInterest() && index >= this.phonetiClassCanUseNumber){
+       else if(this.currentNumber == 2 && !this.canSeeInterest() && index >= this.phonetiClassCanUseNumber){
            this.isShowPayViewWhenanimationFinish = false
            return true;
        }
@@ -486,9 +500,9 @@ swiper {
     showVideo(){
        this.clearVideoTimeout()
        this.showViewTimer = setTimeout(()=>{
-            this.isShowLearnVideo = this.currentIndex == 0 
-            this.isShowInterestVideo = this.currentIndex == 2
-            if(this.currentIndex == 0){
+            this.isShowLearnVideo = this.currentNumber == 0 
+            this.isShowInterestVideo = this.currentNumber == 2
+            if(this.currentNumber == 0){
                 this.$invoke('learn', 'hideVideo');
             }
             this.$apply()

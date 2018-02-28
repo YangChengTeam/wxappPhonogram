@@ -112,6 +112,8 @@ swiper {
     margin-bottom: 20rpx;
 }
 
+
+
 .pay-info {
     display: flex;
     flex-direction: row;
@@ -123,6 +125,10 @@ swiper {
     height: 112rpx;
     font-size: 18.14rpx;
     color: #999;
+}
+
+.pay-desc {
+    width: 56%;
 }
 
 .pay-select {
@@ -223,26 +229,26 @@ swiper {
         <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
 
-    <swiper @change="change()" current="{{currentIndex}}">
-        <learn :phoneticList.sync="phoneticList" ></learn>
-        <read2me :phoneticList.sync="phoneticList"></read2me>
-        <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList"></interest>
+    <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish">
+        <learn :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></learn>
+        <read2me :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></read2me>
+        <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :canUseNumber.sync="phonetiClassCanUseNumber"></interest>
     </swiper>
 
     <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
     <view class="pay-ppw" wx:if="{{isShowPayView}}">
           <view class="pay-ppw-bg">
              <view class="pay-content">
-                <view class="pay-item">    
+                <view class="pay-item" wx:for="{{vipList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">    
                    <view class="pay-info">
-                        <view class="pay-num pay-num-1"></view>
+                        <view class="pay-num pay-num-{{index+1}}"></view>
                         <view class="pay-desc">
-                           <view class="pay-title">拼音课堂</view>
-                           <view class="pay-simple-desc">每天十分钟，十天就会读拼音</view>
+                           <view class="pay-title">{{item.title}}</view>
+                           <view class="pay-simple-desc">{{item.sub_title}}</view>
                         </view>
                         <view class="pay-price">
-                            <view class="pay-new-price">¥39.00</view>
-                            <view class="pay-old-price">原价¥59元</view>
+                            <view class="pay-new-price">¥{{item.real_price}}</view>
+                            <view class="pay-old-price">原价¥{{item.price}}元</view>
                         </view>
                    </view>
                    <image class="pay-select" src="http://tic.upkao.com/Public/wxappImgs/pay-select-bg.png"></image>
@@ -290,9 +296,19 @@ swiper {
         currentVideoPoster: '',
         phoneticList: [],
         phonetiClassList: [],
+        vipList: [],
         phonetiClassInfo: {},
         isShowLearnVideo: false,
-        isShowInterestVideo: false
+        isShowInterestVideo: false,
+        scrollState: {
+            pageX: 0,
+            isLeft: false,
+            isRight: false
+        },
+        phonetiClassCanUseNumber: 1,
+        phoneticListCanUseNumber:9,
+        isShowPayViewWhenanimationFinish: true,
+        showViewTimer: null
     }
 
     computed = {
@@ -301,11 +317,15 @@ swiper {
 
     methods = {
         error(e){
-                        console.log(e)
-
         },
         waiting(e){
-            console.log(e)
+           console.log(e)
+        },
+        animationFinish(e){
+           if(this.isShowPayViewWhenanimationFinish){
+              this.showVideo()
+              this.$apply()
+           } 
         },
         change(itemId , e){
             if(itemId.toString().length > 0){
@@ -324,9 +344,37 @@ swiper {
         },
         closePayView(e){
             this.isShowPayView = false
+            this.isShowPayViewWhenanimationFinish = true
+            if(this.currentIndex == 0){
+               this.$invoke("learn", "back")
+            }else if(this.currentIndex == 1){
+               this.$invoke("read2me", "back")
+            }else if(this.currentIndex == 2){
+               this.$invoke("interest", "back")
+            }
+            this.showVideo()
         }
     }
 
+
+
+    touchStart(e){
+       this.scrollState.pageX = e.touches[0].pageX
+    }
+
+    touchMove(e){
+        let touchMoveX = e.touches[0].pageX;
+        if(touchMoveX > this.scrollState.pageX){
+            this.scrollState.isLeft = true
+            this.scrollState.isRight = false
+        }else{
+            this.scrollState.isRight = true
+            this.scrollState.isLeft = false
+        }
+        this.hideVideo()
+        this.$apply()
+    }
+  
     changeData(){
         let info;
         if(this.currentIndex == 0){
@@ -334,49 +382,75 @@ swiper {
          } else if(this.currentIndex == 2){
              info = this.phonetiClassList[0]
          }
+         this.hideVideo()
+         this.$apply()
          this.setVideoInfo(info)
          this.showVideo()
-         this.$apply()
+    }
+
+    isShowPay(index){
+       if((index >= this.phoneticListCanUseNumber && this.currentIndex < 2) || (index >= this.phonetiClassCanUseNumber && this.currentIndex == 2)){
+           this.isShowPayViewWhenanimationFinish = false
+           return true;
+       }
+       return false
     }
 
     setVideoInfo(info){
         if(!info) return
         this.currentVideoSrc = info.video
         this.currentVideoPoster = info.cover
-        
     }
 
     showPayView(){
         this.isShowPayView = true
     }
 
-    showVideo(){
-         this.isShowLearnVideo = this.currentIndex == 0 
-         this.isShowInterestVideo = this.currentIndex == 2
 
+    showVideo(){
+       if(this.showViewTimer){
+          clearTimeout(this.showViewTimer)
+       }
+       this.showViewTimer = setTimeout(()=>{
+            this.isShowLearnVideo = this.currentIndex == 0 
+            this.isShowInterestVideo = this.currentIndex == 2
+            if(this.currentIndex == 0){
+                this.$invoke('learn', 'hideVideo');
+            }
+            this.$apply()
+            clearTimeout(this.showViewTimer)
+       }, 300)
     }
 
     hideVideo(){
        this.isShowLearnVideo = false
        this.isShowInterestVideo = false
+       
     }
 
     events = {}
 
     async onLoad(params, data) {
        let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
-       let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
        if(phoneticList.data.code && phoneticList.data.code == 1 ){
           this.showVideo()
           this.phoneticList = phoneticList.data.data.list
           this.currentVideoSrc = this.phoneticList[0].video
        }
+       this.$apply()
+
+       let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
        if(phonetiClass.data.code && phonetiClass.data.code == 1){
           this.showVideo()
           this.phonetiClassInfo = phonetiClass.data.data.info
           this.phonetiClassList = phonetiClass.data.data.list
        }
        this.$apply()
+
+       let [vipListErr, vipList] =  await req.get(api.vipList)
+       if(vipList.data.data){
+            this.vipList = vipList.data.data.vip_list
+       }
     }
   }
 </script>

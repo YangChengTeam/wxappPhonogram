@@ -15,7 +15,8 @@ function getUrl(str){
 const api = {
 	loginUrl : getUrl("login"),
 	phoneticList : getUrl("phonetic_list"),
-	phonetiClass: getUrl("phonetic_class")
+	phonetiClass: getUrl("phonetic_class"),
+	vipList: getUrl("vip_list")	
 }
 
 export default api

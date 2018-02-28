@@ -80,9 +80,9 @@
 }
 </style>
 <template>
-<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList">
+<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList" :canUseNumber.sync="canUseNumber">
     <swiper-item wx:for="{{phonetiClassList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" >
-     <view class="interest-content">
+     <view class="interest-content" @touchmove="touchMove" @touchstart="touchStart">
         <view class="interest-video">
                <image src="{{item.cover}}" />
        </view>
@@ -120,6 +120,10 @@
        phonetiClassList: {
            type: Array,
            default: []
+       },
+       canUseNumber: {
+          type: Number,
+          default: 1
        }
     }
 
@@ -132,9 +136,20 @@
        }
     }
 
+    back(){
+       this.$invoke("main", "back")
+    }
+
     events = {}
 
-    methods = {}
+    methods = {
+       touchStart(e){
+          this.$parent.touchStart(e)
+       },
+       touchMove(e){
+          this.$parent.touchMove(e)
+       }
+    }
 
     onLoad () {
         this.$apply()

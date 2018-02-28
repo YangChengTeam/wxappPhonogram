@@ -33,9 +33,9 @@
 }
 </style>
 <template>
-  <main :phoneticList.sync="phoneticList">
+  <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber">
     <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">
-     <view class="read2me-content">
+     <view class="read2me-content"> 
         <view class="read2me-process">
             <text>跟读进度: 1/3</text>
         </view>
@@ -65,12 +65,20 @@
        phoneticList: {
            type: Array,
            default: []
+       },
+       canUseNumber: {
+          type: Number,
+          default: 9
        }
     }
 
     events = {}
 
     methods = {}
+
+    back(){
+       this.$invoke("main", "back")
+    }
 
     onLoad () {
       this.$apply()

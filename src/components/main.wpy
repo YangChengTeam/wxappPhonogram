@@ -156,9 +156,9 @@
 </style>
 <template>
   <swiper-item>
-     <view class="container">
+     <view class="container" @touchmove="touchMove" @touchstart="touchStart">
           <view class="content">
-            <swiper hidden="{{isHiddenList}}" class="list" current="{{currentIndex}}" @change="change()" @scroll="scroll()">
+            <swiper hidden="{{isHiddenList}}" @animationfinish="animationFinish" class="list" current="{{currentIndex}}" @change="change()" >
                   <slot></slot>
             </swiper>
             <block wx:if="{{hasListBtn}}">
@@ -200,7 +200,8 @@
             btnStateLeft: " btn-left-disable",
             btnStateRigth: ""
         },
-        canUseNumber: 9
+        tipIndex: 0
+
     }
     
     props = {
@@ -218,34 +219,53 @@
             type: Number,
             default: 0,
             twoWay: true
+       },
+       canUseNumber: {
+          type: Number,
+          default: 9
        }
     }
 
     events = {}
 
     methods = {
-       scroll(e){
-          console.log(e);
+       touchStart(e){
+          this.$parent.$parent.touchStart(e)
+       },
+       touchMove(e){
+          this.$parent.$parent.touchMove(e)
+       },
+       animationFinish(e){
+           if(!this.isShowPay() && this.$parent.$parent.isShowPayViewWhenanimationFinish){
+              this.$parent.$parent.showVideo()
+              this.$parent.$parent.$apply()
+           } 
        },
        change(itemId, e){
-          if(itemId.toString().length > 0){
-                if(itemId >= this.canUseNumber){
-                    this.$parent.$parent.showPayView()
-                    this.$parent.$parent.$apply()
-                    return
-                }
-                this.isHiddenList = false
-                if(this.currentIndex != itemId){
-                    this.currentIndex = parseInt(itemId)
-                    this.changeData()
+          
+          if(itemId.toString().length > 0){  
+                if(this.currentIndex != itemId ){ 
+                    
+                    if(this.isShowPay(parseInt(itemId))){
+                        this.showPayView()
+                    }else{
+                        this.isHiddenList = false
+                        this.currentIndex = parseInt(itemId)
+                        this.changeData()
+                    }
                 }
                 return
           }
-          let current = e.detail.current
-          if(this.currentIndex == current) {
+          let current = e.detail.current                      
+          if(this.currentIndex == current ) {
                return
           }
           this.currentIndex = current
+          if(this.isShowPay(current)){
+              this.showPayView()
+              return
+          }
+
           this.changeData()
        },
        toogleList(e){
@@ -263,10 +283,34 @@
        }
     }
 
+    back(){
+        console.log(this.canUseNumber)
+       if(this.currentIndex >= this.canUseNumber - 1){
+          this.currentIndex = this.canUseNumber - 1
+          this.$apply()
+       }
+    }
+
+    isShowPay(index){
+        return this.$parent.$parent.isShowPay(index)
+    }
+
+    showPayView(){
+        this.$parent.$parent.hideVideo()
+        this.$parent.$parent.showPayView()
+        this.$parent.$parent.$apply()
+    }
+
+    hideVideo(){
+       if(this.isHiddenList){
+          this.$parent.$parent.hideVideo()
+          this.$parent.$parent.$apply()
+       }
+    }
+
     changeData(){
          if(this.$parent.$parent.currentIndex != 1){
             this.$parent.$parent.setVideoInfo(this.phoneticList[this.currentIndex])
-            this.$parent.$parent.showVideo()
          }  else {
             this.$parent.$parent.hideVideo()
          }
@@ -274,15 +318,22 @@
          this.clickArrow(this.currentIndex)
     }
 
-    clickArrow(n){ 
+    clickArrow(n){
+
           n = parseInt(n)
           if(n < 0){
               if((n == -1 && this.currentIndex == 0) || (n == -2 && this.currentIndex >= this.phoneticList.length - 1)){
                   return
               }
-              this.currentIndex = this.currentIndex + ((n == -1) ? n : 1)
+              var current = this.currentIndex + ((n == -1) ? n : 1)
+              if(this.isShowPay(current)){
+                  this.showPayView()
+                  return
+              }
+              this.$parent.$parent.hideVideo()
+              this.$parent.$parent.$apply()
+              this.currentIndex = current      
           }
-
           if(this.currentIndex >= this.phoneticList.length-1){
                this.btnState.btnStateLeft = ""
                this.btnState.btnStateRight = " btn-right-disable"

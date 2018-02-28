@@ -138,14 +138,14 @@
                            {{item.desp}}
                        </view>
                    </view>
-                   <image src="http://tic.upkao.com/Public/wxappImgs/click2read.png" />
+                   <image src="{{readImgSrc}}"  @tap="play({{index}})" />
                </view>
                <view class="learn-word-info">
                    <image src="{{item.img}}" style="width:218rpx;height:126rpx"/>
                    <view class="learn-word-samples">
-                       <block wx:for="{{item.example}}"  wx:for-index="example_index" wx:for-item="example" wx:key="id" class="image-item">
-                          <view @tap="play()" class="learn-word-sample">
-                            <view class="learn-word-samples-en">{{example.word_phonetic}}</view>
+                       <block wx:for="{{item.example}}"  wx:for-index="exampleIndex" wx:for-item="example" wx:key="id" class="image-item">
+                          <view @tap="play({{index}}-{{exampleIndex}})" class="learn-word-sample{{example.animation ? example.animation : ''}}">
+                            <view class="learn-word-samples-en"><rich-text nodes="{{example.word_phonetic}}"></rich-text></view>
                             <view class="learn-word-samples-cn">{{example.word}}</view>
                           </view>
                        </block>
@@ -161,7 +161,9 @@
   import Main from '../components/main'
   export default class Learn extends wepy.component {
     data = {
-        
+        readImgSrc: "http://tic.upkao.com/Public/wxappImgs/click2read.png",
+        currntAudioSrc: '',
+        audioType: ''
     }
 
     props = {
@@ -188,9 +190,37 @@
        touchMove(e){
           this.$parent.touchMove(e)
        },
-       play(e){
-
+       play(idx, e){
+          this.playEnd()
+          this.audioType = idx
+          if(idx.toString().indexOf('-') > -1){
+             let idxs = idx.split('-')
+             this.currntAudioSrc = this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['video']
+             this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['animation'] = ' learn-word-sample-animate'
+             this.$apply()
+          } else {
+             this.currntAudioSrc = this.phoneticList[parseInt(idx)]['desp_audio']
+          } 
+          console.log(this.currntAudioSrc)
+          this.$parent.play(this.currntAudioSrc)
        }
+    }
+
+    playing(){
+       if(this.audioType.toString().indexOf('-') == -1){
+          this.readImgSrc = "http://tic.upkao.com/Public/wxappImgs/reading.gif"
+          this.$apply()
+       } 
+    }
+
+    playEnd(){
+      if(this.audioType.toString().indexOf('-') == -1){
+          this.readImgSrc = "http://tic.upkao.com/Public/wxappImgs/click2read.png"
+      } else {
+          let idxs = this.audioType.split('-')
+          this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['animation'] = ''
+      }
+      this.$apply()
     }
 
     back(){

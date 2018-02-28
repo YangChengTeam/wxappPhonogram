@@ -203,6 +203,7 @@ swiper {
 .pay-new-price {
    color: #fe5655;
    font-size: 36rpx;
+   text-align: right;
 }
 
 .pay-old-price {
@@ -220,7 +221,9 @@ swiper {
 </style>
 <template>
     <video src="{{currentVideoSrc}}" @waiting="waiting()" @error="error()" class="key-video" wx:if="{{isShowLearnVideo}}" poster="{{currentVideoPoster}}"></video>
-    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}" poster="{{currentVideoPoster}}" bindplay="play()" ></video>
+
+    <audio id="audio" hidden="true"></audio>
 
     <view class="main-bg"></view>
     <view class="menu">
@@ -229,7 +232,7 @@ swiper {
         <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
 
-    <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish">
+    <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish" duration="300">
         <learn :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></learn>
         <read2me :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></read2me>
         <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :canUseNumber.sync="phonetiClassCanUseNumber"></interest>
@@ -247,8 +250,8 @@ swiper {
                            <view class="pay-simple-desc">{{item.sub_title}}</view>
                         </view>
                         <view class="pay-price">
-                            <view class="pay-new-price">¥{{item.real_price}}</view>
-                            <view class="pay-old-price">原价¥{{item.price}}元</view>
+                            <view class="pay-new-price">¥{{item.real_price2Int}}</view>
+                            <view class="pay-old-price">原价¥{{item.price2Int}}元</view>
                         </view>
                    </view>
                    <image class="pay-select" src="http://tic.upkao.com/Public/wxappImgs/pay-select-bg.png"></image>
@@ -308,7 +311,8 @@ swiper {
         phonetiClassCanUseNumber: 1,
         phoneticListCanUseNumber:9,
         isShowPayViewWhenanimationFinish: true,
-        showViewTimer: null
+        showViewTimer: null,
+        currentAudioSrc: ''
     }
 
     computed = {
@@ -322,7 +326,7 @@ swiper {
            console.log(e)
         },
         animationFinish(e){
-           if(this.isShowPayViewWhenanimationFinish){
+           if(this.isShowPayViewWhenanimationFinish && !this.isShowPay){
               this.showVideo()
               this.$apply()
            } 
@@ -353,10 +357,24 @@ swiper {
                this.$invoke("interest", "back")
             }
             this.showVideo()
+        },playEnd(e){
+            this.$invoke('learn', 'playEnd')
         }
     }
 
+    isSuperVip(){
 
+    }
+
+    isLearnVip(){
+
+    }
+
+
+
+    isVip(){
+       return false
+    }
 
     touchStart(e){
        this.scrollState.pageX = e.touches[0].pageX
@@ -419,25 +437,57 @@ swiper {
             }
             this.$apply()
             clearTimeout(this.showViewTimer)
-       }, 300)
+       }, 500)
     }
 
     hideVideo(){
        this.isShowLearnVideo = false
        this.isShowInterestVideo = false
-       
     }
 
-    events = {}
+    play(src){
+        this.audioCtx.src = src
+        this.audioCtx.play()
+    }
+
+    onReady(e) {
+        this.audioCtx = wx.createInnerAudioContext('audio')
+      
+        this.audioCtx.onEnded(()=>{
+           this.$invoke('learn', 'playEnd')
+        })
+
+        this.audioCtx.onPlay(()=>{
+           this.$invoke('learn', 'playing')
+        })
+
+        this.audioCtx.onError((res)=>{
+            console.log(res)
+        })
+    }
 
     async onLoad(params, data) {
+       wepy.showLoading({
+          mask: true,
+          title: '正在加载...'
+       })
        let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
        if(phoneticList.data.code && phoneticList.data.code == 1 ){
           this.showVideo()
           this.phoneticList = phoneticList.data.data.list
+          this.phoneticList.forEach((item)=>{
+               item.example.forEach((example)=>{
+                   example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)
+               })
+          })
           this.currentVideoSrc = this.phoneticList[0].video
        }
        this.$apply()
+
+       this.$nextTick().then(() => {
+          wepy.hideLoading()
+       });
+       
 
        let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
        if(phonetiClass.data.code && phonetiClass.data.code == 1){
@@ -450,7 +500,13 @@ swiper {
        let [vipListErr, vipList] =  await req.get(api.vipList)
        if(vipList.data.data){
             this.vipList = vipList.data.data.vip_list
+            this.vipList.forEach(item=>{
+                item.real_price2Int = parseInt(item.real_price)
+                item.price2Int = parseInt(item.price)
+            })
        }
     }
+
+
   }
 </script>

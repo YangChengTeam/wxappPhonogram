@@ -158,7 +158,7 @@
   <swiper-item>
      <view class="container" @touchmove="touchMove" @touchstart="touchStart">
           <view class="content">
-            <swiper hidden="{{isHiddenList}}" @animationfinish="animationFinish" class="list" current="{{currentIndex}}" @change="change()" >
+            <swiper hidden="{{isHiddenList}}" @animationfinish="animationFinish" class="list" current="{{currentIndex}}" @change="change()" duration="300">
                   <slot></slot>
             </swiper>
             <block wx:if="{{hasListBtn}}">
@@ -242,10 +242,8 @@
            } 
        },
        change(itemId, e){
-          
           if(itemId.toString().length > 0){  
-                if(this.currentIndex != itemId ){ 
-                    
+                if(this.currentIndex != itemId ){                 
                     if(this.isShowPay(parseInt(itemId))){
                         this.showPayView()
                     }else{

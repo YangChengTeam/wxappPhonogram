@@ -111,8 +111,20 @@
 100% {transform: scale(1, 1);}
 }
 
+@keyframes learn-image-sample-animate
+{
+0%   {transform: scale(1.0,1.0);}
+25%  {transform: scale(1.1,1.1);}
+50%  {transform: scale(1.1,1.1);}
+100% {transform: scale(1.0, 1.0);}
+}
+
 .learn-word-sample-animate {
     animation: learn-word-sample-animate 3s;
+}
+
+.learn-image-sample-animate {
+    animation: learn-image-sample-animate 3s;
 }
 
 .key-video {
@@ -141,7 +153,7 @@
                    <image src="{{item.playingImg}}"  @tap="play({{index}})" />
                </view>
                <view class="learn-word-info">
-                   <image src="{{item.img}}" style="width:218rpx;height:126rpx" />
+                   <image src="{{item.img}}" class="{{item.sampleAnimation}}" @tap="playSample({{index}})" style="width:218rpx;height:126rpx" />
                    <view class="learn-word-samples">
                        <block wx:for="{{item.example}}"  wx:for-index="exampleIndex" wx:for-item="example" wx:key="id" class="image-item">
                           <view @tap="play({{index}}-{{exampleIndex}})" class="learn-word-sample{{example.animation}}">
@@ -206,6 +218,11 @@
              this.currntAudioSrc = this.phoneticList[parseInt(idx)]['desp_audio']
           } 
           this.$parent.play(this.currntAudioSrc)
+       },playSample(index, e){
+            this.audioType = index
+            this.phoneticList[index].sampleAnimation = " learn-image-sample-animate"
+            this.currntAudioSrc = this.phoneticList[index]['voice']
+            this.$parent.play(this.currntAudioSrc)
        }
     }
 
@@ -221,7 +238,8 @@
       if(this.audioType == 'default') return
       if(this.audioType.toString().indexOf('-') == -1){
           this.phoneticList[parseInt(this.audioType)].playingImg = "http://tic.upkao.com/Public/wxappImgs/click2read.png"
-      } else {
+          this.phoneticList[parseInt(this.audioType)].sampleAnimation = ""
+      } else if(this.audioType == 'sample'){
           let idxs = this.audioType.split('-')
           this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['animation'] = ''
       }

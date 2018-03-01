@@ -221,7 +221,7 @@ swiper {
 </style>
 <template>
     <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowLearnVideo}}" poster="{{currentVideoPoster}}"></video>
-    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}" poster="{{currentVideoPoster}}" bindplay="play()" ></video>
+    <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}" poster="{{currentVideoPoster}}"  ></video>
 
     <audio id="learnAudio" hidden="true"></audio>
     <audio id="r2mAudio" hidden="true"></audio>
@@ -622,6 +622,7 @@ swiper {
           this.phoneticList = phoneticList
           this.phoneticList.forEach((item)=>{
                item.animation = ''
+               item.sampleAnimation = ''
                item.playingImg = 'http://tic.upkao.com/Public/wxappImgs/click2read.png'
                item.example.forEach((example)=>{
                    example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)

@@ -239,7 +239,7 @@
       if(this.audioType.toString().indexOf('-') == -1){
           this.phoneticList[parseInt(this.audioType)].playingImg = "http://tic.upkao.com/Public/wxappImgs/click2read.png"
           this.phoneticList[parseInt(this.audioType)].sampleAnimation = ""
-      } else if(this.audioType == 'sample'){
+      } else {
           let idxs = this.audioType.split('-')
           this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['animation'] = ''
       }

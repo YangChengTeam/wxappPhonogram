@@ -238,7 +238,7 @@
                 if(this.currentIndex != itemId ){                 
                     if(this.isShowPay(parseInt(itemId))){
                         this.showPayView()
-                    }else{
+                    } else{
                         this.isHiddenList = false
                         this.currentIndex = parseInt(itemId)
                         this.changeData()
@@ -253,8 +253,8 @@
               this.currentIndex = current          
               return
           } else {
-             this.changeData()
-
+              this.changeData()
+                
           }
        },
        toogleList(e){
@@ -275,7 +275,6 @@
     }
 
     back(){
-       console.log(this.currentIndex)
        if(this.currentNumber >= this.canUseNumber - 1){
           this.currentIndex = this.canUseNumber - 1
           this.currentNumber = this.canUseNumber - 1

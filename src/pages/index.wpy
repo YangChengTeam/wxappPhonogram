@@ -223,7 +223,9 @@ swiper {
     <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowLearnVideo}}" poster="{{currentVideoPoster}}"></video>
     <video src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowInterestVideo}}" poster="{{currentVideoPoster}}" bindplay="play()" ></video>
 
-    <audio id="audio" hidden="true"></audio>
+    <audio id="learnAudio" hidden="true"></audio>
+    <audio id="r2mAudio" hidden="true"></audio>
+
 
     <view class="main-bg"></view>
     <view class="menu">
@@ -232,7 +234,7 @@ swiper {
         <button @tap="change(2)" class="menu-interest{{ currentNumber == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
 
-    <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish()" duration="300">
+    <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish()" duration="100">
         <learn :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></learn>
         <read2me :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber"></read2me>
         <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :canUseNumber.sync="phonetiClassCanUseNumber"></interest>
@@ -304,6 +306,7 @@ swiper {
         phonetiClassList: [],
         phonetiClassInfo: {},
         vipList: [],
+        isMoved: false,
 
 
         isShowLearnVideo: false,
@@ -314,6 +317,7 @@ swiper {
 
         scrollState: {
             pageX: 0,
+            pageY: 0,
             isLeft: false,
             isRight: false,
             startTime: 0
@@ -331,6 +335,7 @@ swiper {
     methods = {
         //swiper动画结束
         animationFinish(e){
+           this.isMoved = false
            if(this.isShowPayViewWhenanimationFinish){
               this.showVideo()
            } 
@@ -339,13 +344,14 @@ swiper {
         change(itemId , e){
             let current = e.detail.current
             if(itemId.toString().length > 0){
-                if(this.currentIndex == itemId){
+                if(this.currentNumber == itemId){
                      return
                 }
                 current = itemId
                 this.currentIndex = itemId
             }
             this.currentNumber = current
+            this.setVideoCtx()
             this.changeData()
         },
         //关闭支付窗口
@@ -385,27 +391,35 @@ swiper {
     //触摸开始
     touchStart(e){
        this.scrollState.pageX = e.touches[0].pageX
+       this.scrollState.pageY = e.touches[0].pageY
        this.scrollState.startTime = new Date().getTime()
     }
 
     //触摸移动
     touchMove(e){
         //根据触摸时间和移动距离来判定用户是否真的在做切换操作
+        if(this.isMoved){
+           return
+        }
         let touchMoveX = e.touches[0].pageX
+        let touchMoveY = e.touches[0].pageY
+        if(Math.abs(touchMoveY - this.scrollState.pageY) > 20){
+              return
+        }
 
+      
         let diff = new Date().getTime() - this.scrollState.startTime
         let offset = Math.abs(touchMoveX - this.scrollState.pageX) 
-        if(diff < 200 || offset > 5){
-            this.clearVideoTimeout()
-            this.hideVideo()
-            this.$apply()
+        if(diff > 200 && offset > 10){
+          if(this.currentNumber == 0 || this.currentNumber == 2){
+             this.clearVideoTimeout()
+             this.hideVideo()
+             this.$apply()
+          }
         } else {
             return
         }
-        if(offset < 30){
-            return
-        }
-
+       
         if(touchMoveX > this.scrollState.pageX){
             this.scrollState.isLeft = true
             this.scrollState.isRight = false
@@ -414,9 +428,17 @@ swiper {
             this.scrollState.isLeft = false
         }
 
-        this.audioCtx.pause()
-        this.$invoke('learn', 'playEnd')
-        
+        this.switched()
+        this.isMoved = true
+    }
+
+    switched(){
+        if(this.currentNumber == 0 || this.currentNumber == 2){
+            this.stop()
+            this.$invoke('learn', 'playEnd')
+        } else {
+            this.$invoke('read2me', 'over')
+        }
     }
     
     //切换数据
@@ -514,15 +536,43 @@ swiper {
        this.isShowInterestVideo = false
     }
 
+    //音频
 
-    //播放视频
+    //播放音频
     play(src){
         this.audioCtx.src = src
         this.audioCtx.play()
     }
 
-    
+    stop(){
+        this.r2mAudioCtx.stop()
+        this.learnAudioCtx.stop()
+    }
 
+    setVideoCtx(){
+       if(this.currentNumber == 0){
+          this.audioCtx = this.learnAudioCtx
+          this.setAudioLearnCallback()
+       } else if(this.currentNumber == 1){
+          this.audioCtx = this.r2mAudioCtx
+       }
+    }
+
+    //设置learn
+    setAudioLearnCallback(){
+        this.audioCtx.onEnded(()=>{
+           this.$invoke('learn', 'playEnd')
+        })
+
+        this.audioCtx.onPlay(()=>{
+           this.$invoke('learn', 'playing')
+        })
+
+        this.audioCtx.onError((res)=>{
+            this.audioCtx.play()
+        })
+    }
+    
     //接口  注 缓存严重影响性能
 
     //获取拼音列表
@@ -555,6 +605,8 @@ swiper {
           this.showVideo()
           this.phoneticList = phoneticList
           this.phoneticList.forEach((item)=>{
+               item.animation = ''
+               item.playingImg = 'http://tic.upkao.com/Public/wxappImgs/click2read.png'
                item.example.forEach((example)=>{
                    example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)
                })
@@ -651,20 +703,12 @@ swiper {
        
     }
 
+
+
     onReady(e) {
-        this.audioCtx = wx.createInnerAudioContext('audio')
-      
-        this.audioCtx.onEnded(()=>{
-           this.$invoke('learn', 'playEnd')
-        })
-
-        this.audioCtx.onPlay(()=>{
-           this.$invoke('learn', 'playing')
-        })
-
-        this.audioCtx.onError((res)=>{
-            this.audioCtx.play()
-        })
+        this.learnAudioCtx = wx.createInnerAudioContext('learnAudio')
+        this.r2mAudioCtx = wx.createInnerAudioContext('r2mAudio')
+        this.setVideoCtx()
     }
 
 

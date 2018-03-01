@@ -22,6 +22,12 @@ export default {
          }
          return [{errMsg: 'login fail'}, null]
     }
+    ,
+    async authorizeRecord(){
+        return await to(wepy.authorize({
+            scope: 'scope.record'
+        }))
+    }
 
 
 }

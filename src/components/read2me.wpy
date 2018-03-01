@@ -9,6 +9,10 @@
 }
 
 .read2me-process {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
     width: 602rpx;
     color: #fff;
     -webkit-text-stroke: 1px #c94801;
@@ -31,20 +35,61 @@
   width: 100%;
   flex-direction: row;
 }
+
+.record-process {
+   position: relative;
+   height: 37rpx;
+   width: 302rpx;
+   margin-left: 40rpx;
+}
+
+.record-process-bg {
+   position: absolute;
+   left: 0;
+   height: 37rpx;
+   width: 302rpx;
+}
+
+.record-process-bar {
+   position: absolute;
+   background-image: url('http://tic.upkao.com/Public/wxappImgs/progress_bar.png');
+   background-size: cover;
+   height: 37rpx;
+}
+
+
+@keyframes record-process-bar-animate
+{
+0%  {width: 302rpx;}
+33%   {width: 200rpx}
+66%  {width: 100rpx;}
+100%  {width: 0;}
+}
+
+.record-process-bar-animate {
+    animation: record-process-bar-animate 3s;
+}
+
 </style>
 <template>
   <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber">
     <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">
-     <view class="read2me-content"> 
+
+     <view class="read2me-content" @touchmove="touchMove" @touchstart="touchStart"> 
         <view class="read2me-process">
-            <text>跟读进度: 1/3</text>
+            <text>跟读进度: {{playCount}}/3</text>
+            <view class="record-process" wx:if="{{isShowProcessBar}}">
+                 <image class="record-process-bg" src="http://tic.upkao.com/Public/wxappImgs/progress_bg.png"/>
+                 <view class="record-process-bar record-process-bar-animate"></view>
+            </view>
         </view>
+        
         <view class="read2me-word-image">
             <image src="{{item.img}}" />
         </view>
         <view class="read2me-play">
-             <image src="http://tic.upkao.com/Public/wxappImgs/r2mholder.png" style="width:183rpx;height:203rpx;"/>
-             <image src="http://tic.upkao.com/Public/wxappImgs/play.png" style="width:124rpx;height:126rpx; margin-left: 20rpx;"/>
+             <image src="{{currentr2mSrc}}" style="width:183rpx;height:203rpx;"/>
+             <image src="{{currentBtnSrc}}" style="width:124rpx;height:126rpx; margin-left: 20rpx;" @tap="play({{index}})"/>
         </view>
      </view>
    </swiper-item>
@@ -53,9 +98,23 @@
 <script>
   import wepy from 'wepy'
   import Main from '../components/main'
+  import util from '../common/util.js'
 
   export default class Read2me extends wepy.component {
-    data = {}
+    data = {
+       guide01Src: "http://tic.upkao.com/Public/wxappImgs/guide_01.mp3",
+       guide02Src: "http://tic.upkao.com/Public/wxappImgs/guide_02.mp3",
+       tipSrc: "http://tic.upkao.com/Public/wxappImgs/user_tape_tips.mp3",
+       currentr2mSrc: "http://tic.upkao.com/Public/wxappImgs/r2mholder.png",
+       currentBtnSrc: "http://tic.upkao.com/Public/wxappImgs/play.png",
+       currentAudioSrc: "http://tic.upkao.com/Public/wxappImgs/guide_01.mp3",
+       currentRecordSrc: '',
+       currentIndex: 0,
+       playCount: 1,
+       playState: 0,
+       isShowProcessBar: false,
+       isPlaying: false
+    }
 
     components = {
        main: Main
@@ -74,13 +133,177 @@
 
     events = {}
 
-    methods = {}
+    methods = {
+       touchStart(e){
+          this.$parent.touchStart(e)
+       },
+       touchMove(e){
+          this.$parent.touchMove(e)
+       },
+       play(index, e){
+         this.play(index, e)
+       }
+    }
+
+    setAudior2mCallback(){
+        //神坑 call设置多次 将会调用多次
+        if(this.isSetAudioCall){
+           return
+        }
+        this.isSetAudioCall = true
+        this.$parent.audioCtx.onEnded(()=>{
+            this.playEnd()
+        })
+
+        this.$parent.audioCtx.onPlay(()=>{
+            this.playing()
+        })
+
+        this.$parent.audioCtx.onError((res)=>{
+            this.playEnd(true)
+            console.log(res)
+        })
+    }
+
+    async play(index, e){
+        let [ err, res ] = await util.authorizeRecord()
+
+        if(err){
+            return
+        }
+
+        if(e){
+           this.isPlaying = !this.isPlaying
+           if(!this.isPlaying){
+                this.stop()
+                return
+           }
+        }
+        console.log(this.playCount)
+        if(this.playCount > 3){
+           this.over()
+           return
+        }
+        if(this.playCount == 1){
+            this.currentAudioSrc = this.guide01Src
+         }else{
+            this.currentAudioSrc = this.guide02Src
+         }
+         this.currentRecordSrc = ""
+         this.playState = 0 
+         this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/loading.png"
+         this.currentIndex = index
+         this.$apply()
+         this.setAudior2mCallback()
+         this.$parent.play(this.currentAudioSrc)
+    }
+
+    over(){
+       this.$parent.stop()
+       this.currentr2mSrc = "http://tic.upkao.com/Public/wxappImgs/r2mholder.png"
+       this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/play.png"
+       this.playState = 4
+       this.playCount = 1
+       this.isPlaying = false
+       this.$apply()
+    }
+    
+    stop(){
+        this.currentr2mSrc = "http://tic.upkao.com/Public/wxappImgs/r2mholder.png"
+        this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/play.png"
+        this.playState = 0
+        this.currentRecordSrc = ""
+        this.$apply()
+        this.$parent.stop()
+    }
+
+    playEnd(){
+       if(!this.isPlaying){
+           return
+       }
+       if(this.playState == 0){
+          this.currentAudioSrc = this.phoneticList[this.currentIndex].voice
+          this.playState = 1   //播放tip
+          this.$parent.play(this.currentAudioSrc)
+       }
+       else if(this.playState == 1){
+          this.currentAudioSrc = this.tipSrc
+          this.playState = 2  //等待录音
+          this.$parent.play(this.currentAudioSrc)
+       }
+       else if(this.playState == 2){
+          if(this.currentRecordSrc == ""){
+             this.record()
+          } else {
+             this.playState = 3
+             this.$parent.play(this.currentRecordSrc)
+          }
+       }
+       else if(this.playState == 3){
+          this.playCount += 1
+          this.play(this.currentIndex)
+       }
+       
+    }
+
+    playing(){
+       if(!this.isPlaying){
+          return
+       }
+       if(this.playState == 2 && this.currentRecordSrc == ""){
+          this.currentr2mSrc = "http://tic.upkao.com/Public/wxappImgs/record.png"
+          this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/stop.png"
+       }  else {
+          this.currentr2mSrc = "http://tic.upkao.com/Public/wxappImgs/pre-reading.gif"
+          this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/stop.png"
+       }
+       this.$apply()
+    }
+
+    record(){
+        this.recorderManager.start({
+            duration: 3000,
+            sampleRate: 44100,
+            numberOfChannels: 1,
+            encodeBitRate: 192000,
+            format: 'mp3',
+        })
+    }
 
     back(){
        this.$invoke("main", "back")
     }
 
     onLoad () {
+      this.recorderManager = wepy.getRecorderManager()
+      this.recorderManager.onStart(() => {
+          console.log('onStart')
+          
+          wepy.showLoading({
+                mask: true,
+                title: '请开始跟读'
+          })
+          this.isShowProcessBar = true
+          this.$apply()
+      })
+
+      this.recorderManager.onStop((res) => {
+         console.log('onStop')
+         wepy.hideLoading()
+         this.isShowProcessBar = false
+         this.$apply()
+         this.currentRecordSrc = res.tempFilePath
+         this.currentAudioSrc = this.phoneticList[this.currentIndex].voice
+         this.$parent.play(this.currentAudioSrc)
+      })
+
+      this.recorderManager.onError((err) => {
+         console.log(err)
+         wepy.hideLoading()
+         this.isShowProcessBar = false
+         this.$apply()
+         this.record()
+      })
     }
   }
 </script>

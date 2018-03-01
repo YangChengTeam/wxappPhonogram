@@ -307,6 +307,7 @@ swiper {
         phonetiClassInfo: {},
         vipList: [],
         isMoved: false,
+        isChange: false,
 
 
         isShowLearnVideo: false,
@@ -335,10 +336,16 @@ swiper {
     methods = {
         //swiper动画结束
         animationFinish(e){
-           this.isMoved = false
+           if(this.isChange || this.scrollState.isLeft || this.scrollState.isRight){
+              this.switched()
+           }
            if(this.isShowPayViewWhenanimationFinish){
               this.showVideo()
-           } 
+           }
+           this.scrollState.isLeft = false
+           this.scrollState.isRight = false
+           this.isChange = false
+           this.isMoved = false
         },
         //swiper切换
         change(itemId , e){
@@ -350,6 +357,7 @@ swiper {
                 current = itemId
                 this.currentIndex = itemId
             }
+            this.isChange = true
             this.currentNumber = current
             this.setVideoCtx()
             this.changeData()
@@ -398,12 +406,16 @@ swiper {
     //触摸移动
     touchMove(e){
         //根据触摸时间和移动距离来判定用户是否真的在做切换操作
+
+        
+
         if(this.isMoved){
            return
         }
         let touchMoveX = e.touches[0].pageX
         let touchMoveY = e.touches[0].pageY
-        if(Math.abs(touchMoveY - this.scrollState.pageY) > 20){
+        console.log('y' + Math.abs(touchMoveY - this.scrollState.pageY))
+        if(Math.abs(touchMoveY - this.scrollState.pageY) > 5){
               return
         }
 
@@ -419,7 +431,7 @@ swiper {
         } else {
             return
         }
-       
+
         if(touchMoveX > this.scrollState.pageX){
             this.scrollState.isLeft = true
             this.scrollState.isRight = false
@@ -432,6 +444,7 @@ swiper {
         this.isMoved = true
     }
 
+    //切换之后的操作
     switched(){
         if(this.currentNumber == 0 || this.currentNumber == 2){
             this.stop()
@@ -552,7 +565,10 @@ swiper {
     setVideoCtx(){
        if(this.currentNumber == 0){
           this.audioCtx = this.learnAudioCtx
-          this.setAudioLearnCallback()
+          if(!this.isSetAudioLearnCallback){
+               this.setAudioLearnCallback()
+               this.isSetAudioLearnCallback = true
+          }
        } else if(this.currentNumber == 1){
           this.audioCtx = this.r2mAudioCtx
        }

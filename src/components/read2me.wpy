@@ -141,7 +141,7 @@
           this.$parent.touchMove(e)
        },
        play(index, e){
-         this.play(index, e)
+          this.play(index, e)
        }
     }
 

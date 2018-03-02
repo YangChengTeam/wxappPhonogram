@@ -163,7 +163,7 @@
             </swiper>
             <block wx:if="{{hasListBtn}}">
                <view hidden="{{!isHiddenList}}" class="image-list">
-                    <view  wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
+                    <view  wx:for="{{vipPhoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
                        <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
                        <block wx:if="{{(canSeeImageList|| index < canUseNumber) ? 1 : 0}}">
                         <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg.png" style="width:292rpx;height:180rpx" class="image-item-bg" ></image>
@@ -180,7 +180,7 @@
           </view>
           <view class="nav" hidden="{{isHiddenList}}">
              <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="clickArrow(-1)"></button>
-              <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{currentNumber+1}}/{{phoneticList.length}}</button>
+              <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{currentNumber+1}}/{{vipPhoneticList.length}}</button>
               <button title="右" class="btn-right{{btnState.btnStateRight}}"  @tap="clickArrow(-2)"></button>
               <button @tap="toogleList()" wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
           </view>
@@ -211,12 +211,15 @@
           type: Boolean,
           default: true
        },
+      vipPhoneticList: {
+          type: Array,
+          default: []
+       },
 
        phoneticList: {
            type: Array,
            default: []
        },
-
        canUseNumber: {
           type: Number,
           default: 9
@@ -232,21 +235,20 @@
        touchMove(e){
           this.$parent.$parent.touchMove(e)
        },
-       
        change(itemId, e){
-          if(itemId.toString().length > 0){  
-                if(this.currentIndex != itemId ){                 
-                    if(this.isShowPay(parseInt(itemId))){
-                        this.showPayView()
-                    } else{
-                        this.isHiddenList = false
-                        this.currentIndex = parseInt(itemId)
-                        this.changeData()
-                    }
+          if(itemId.toString().length > 0){
+                itemId = parseInt(itemId)
+                if(this.isShowPay(itemId)){
+                      this.showPayView()
+                      return
+                } 
+                this.isHiddenList = false
+                if(this.currentNumber != itemId ){
+                    this.currentIndex = parseInt(itemId)
                 }
                 return
           }
-          let current = e.detail.current                      
+          let current = e.detail.current   
           this.currentNumber = current
           if(this.isShowPay(current)){
               this.showPayView()
@@ -261,8 +263,6 @@
           this.isHiddenList = !this.isHiddenList
           if(this.isHiddenList){
               this.$parent.$parent.hideVideo()
-          } else {
-              this.$parent.$parent.showVideo()
           }
           this.canSeeImageList = this.$parent.$parent.canSeeImageList()
           this.$apply()
@@ -287,12 +287,10 @@
     }
 
     showPayView(){
-        this.$parent.$parent.clearVideoTimeout()
         this.$parent.$parent.hideVideo()
         this.$parent.$parent.showPayView()
         this.$parent.$parent.$apply()
     }
-
 
     hideVideo(){
        if(this.isHiddenList){
@@ -316,7 +314,7 @@
     clickArrow(n){
           n = parseInt(n)
           if(n < 0){
-              if((n == -1 && this.currentNumber == 0) || (n == -2 && this.currentNumber >= this.phoneticList.length - 1)){
+              if((n == -1 && this.currentNumber == 0) || (n == -2 && this.currentNumber >= this.vipPhoneticList.length - 1)){
                   return
               }
               var current = (this.currentNumber) + ((n == -1) ? n : 1)
@@ -329,7 +327,7 @@
               this.currentIndex = current
               this.currentNumber = current     
           }
-          if(this.currentNumber >= this.phoneticList.length-1){
+          if(this.currentNumber >= this.vipPhoneticList.length - 1){
                this.btnState.btnStateLeft = ""
                this.btnState.btnStateRight = " btn-right-disable"
           } else {

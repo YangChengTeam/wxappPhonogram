@@ -8,18 +8,11 @@
   flex-direction: column;
 }
 
-.learn-video {
-  width: 602rpx;
-  height: 340rpx;
-  flex-direction: row;
-  background: url('http://tic.upkao.com/Public/wxappImgs/video-bg.png') no-repeat;
-  background-size: 100% 100%;
-}
 
-.learn-video > video, .learn-video > image {
-    width: 578rpx;
-    height: 316rpx;
-    margin: 13rpx;
+
+.video-play image {
+    width: 51rpx;
+    height: 51rpx;
 }
 
 .learn-desp {
@@ -113,9 +106,9 @@
 
 @keyframes learn-image-sample-animate
 {
-0%   {transform: scale(1.0,1.0);}
-25%  {transform: scale(1.1,1.1);}
-50%  {transform: scale(1.1,1.1);}
+0%   {transform: scale(0.7,0.7);}
+25%  {transform: scale(0.8,0.8);}
+50%  {transform: scale(0.9,0.9);}
 100% {transform: scale(1.0, 1.0);}
 }
 
@@ -138,11 +131,14 @@
 </style>
 
 <template>
-   <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber">
+   <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList">
       <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item">
            <view class="learn-content" @touchmove="touchMove" @touchstart="touchStart">
-               <view class="learn-video">
-                   <image src="{{item.cover}}" />
+               <view class="video">
+                   <image src="{{item.cover}}" class="video-cover"/>
+                   <view class="video-play">
+                     <image @tap="playVideo()" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
+                   </view>
                </view>
                <view class="learn-desp">
                    <view>
@@ -171,36 +167,20 @@
 <script>
   import wepy from 'wepy'
   import Main from '../components/main'
+  import Common from '../mixins/common.js'
   export default class Learn extends wepy.component {
     data = {
         currntAudioSrc: '',
         audioType: 'default'
     }
 
-    props = {
-       phoneticList: {
-           type: Array,
-           default: []
-       },
-       canUseNumber: {
-          type: Number,
-          default: 9
-       }
-    }
-
     components = {
        main: Main
     }
 
-    events = {}
+    mixins = [Common]
 
-    methods = {
-       touchStart(e){
-          this.$parent.touchStart(e)
-       },
-       touchMove(e){
-          this.$parent.touchMove(e)
-       },
+    methods = {  
        play(idx, e){
           console.log(idx)
           if(this.audioType == idx){
@@ -218,7 +198,8 @@
              this.currntAudioSrc = this.phoneticList[parseInt(idx)]['desp_audio']
           } 
           this.$parent.play(this.currntAudioSrc)
-       },playSample(index, e){
+       },
+       playSample(index, e){
             this.audioType = index
             this.phoneticList[index].sampleAnimation = " learn-image-sample-animate"
             this.currntAudioSrc = this.phoneticList[index]['voice']
@@ -247,10 +228,7 @@
       this.$apply()
     }
 
-    //非会员切换swiper之后退回上一个
-    back(){
-       this.$invoke("main", "back")
-    }
+    
 
     //隐藏视频
     hideVideo(){

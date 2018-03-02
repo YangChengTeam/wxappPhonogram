@@ -72,7 +72,7 @@
 
 </style>
 <template>
-  <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber">
+  <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList">
     <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">
 
      <view class="read2me-content" @touchmove="touchMove" @touchstart="touchStart"> 
@@ -99,6 +99,7 @@
   import wepy from 'wepy'
   import Main from '../components/main'
   import util from '../common/util.js'
+  import Common from '../mixins/common.js'
 
   export default class Read2me extends wepy.component {
     data = {
@@ -116,30 +117,14 @@
        isPlaying: false
     }
 
+    mixins = [Common]
+
+
     components = {
        main: Main
     }
 
-    props = {
-       phoneticList: {
-           type: Array,
-           default: []
-       },
-       canUseNumber: {
-          type: Number,
-          default: 9
-       }
-    }
-
-    events = {}
-
     methods = {
-       touchStart(e){
-          this.$parent.touchStart(e)
-       },
-       touchMove(e){
-          this.$parent.touchMove(e)
-       },
        play(index, e){
           this.play(index, e)
        }
@@ -179,7 +164,6 @@
                 return
            }
         }
-        console.log(this.playCount)
         if(this.playCount > 3){
            this.over()
            return
@@ -268,10 +252,6 @@
             encodeBitRate: 192000,
             format: 'mp3',
         })
-    }
-
-    back(){
-       this.$invoke("main", "back")
     }
 
     onLoad () {

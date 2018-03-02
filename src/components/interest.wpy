@@ -80,12 +80,15 @@
 }
 </style>
 <template>
-<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList" :canUseNumber.sync="canUseNumber">
+<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="phonetiClassList">
     <swiper-item wx:for="{{phonetiClassList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" >
      <view class="interest-content" @touchmove="touchMove" @touchstart="touchStart">
-        <view class="interest-video">
-               <image src="{{item.cover}}" />
-       </view>
+        <view class="video">
+              <image src="{{item.cover}}" class="video-cover"/>
+              <view class="video-play">
+                     <image @tap="playVideo()" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
+              </view>
+        </view>
         <view class="interest-desc">
            <view class="interest-desc-inner">
                 <view class="interest-desc-title">{{phonetiClassInfo.title}}</view>
@@ -102,6 +105,7 @@
 <script>
   import wepy from 'wepy'
   import Main from '../components/main'
+  import Common from '../mixins/common.js'
 
   export default class Interest extends wepy.component {
     components = {
@@ -127,6 +131,9 @@
        }
     }
 
+    mixins = [Common]
+
+
     computed = {
        realPrice(){
            return parseInt(this.phonetiClassInfo.real_price)
@@ -136,23 +143,12 @@
        }
     }
 
-    back(){
-       this.$invoke("main", "back")
-    }
-
-    events = {}
-
     methods = {
-       touchStart(e){
-          this.$parent.touchStart(e)
-       },
-       touchMove(e){
-          this.$parent.touchMove(e)
-       }
+       
     }
 
     onLoad () {
-        this.$apply()
+        
     }
   }
 </script>

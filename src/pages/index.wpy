@@ -284,7 +284,7 @@ swiper {
                 </view>
                  
                 <view class="pay-confirm-wrap">
-                <button class="pay-confirm"></button>
+                <button class="pay-confirm" @tap="pay()"></button>
                 </view>
             </view>
           </view>
@@ -294,7 +294,6 @@ swiper {
 
 <script>
   import wepy from 'wepy'
-  import Toast from 'wepy-com-toast'
 
   import Read2me from '../components/read2me'
   import Learn from '../components/learn'
@@ -304,6 +303,7 @@ swiper {
   import global from '../common/global.js'
   import api from '../common/config.js'
   import req from '../common/request.js'
+  import to from 'await-to-js'
 
 
   export default class Index extends wepy.page {
@@ -332,7 +332,6 @@ swiper {
         phonetiClassInfo: {},
         vipList: [],
 
-
         isMoved: false,
         isChange: false,
         isShowVideo: false,
@@ -347,7 +346,6 @@ swiper {
 
         phonetiClassCanUseNumber: 1,
         phoneticListCanUseNumber:9
-        
     }
 
     computed = {
@@ -411,6 +409,13 @@ swiper {
                 }
             })
             console.log(this.currentPayInfo)
+        },
+        //确认购买
+        async pay(e){
+          let status = await util.authLogin()
+          if(status){
+              await util.pay(this.currentPayInfo)
+          }
         }
     }
 
@@ -456,15 +461,13 @@ swiper {
             this.stop()
             this.$invoke('learn', 'playEnd')
         } else {
-            this.$invoke('read2me', 'over')
+            this.$invoke('read2me', 'playOver')
         }
         this.$apply()
     }
     
     //切换数据
     changeData(){
-        console.log('changeData')
-
         let info;
         if(this.currentNumber == 0){
              info = this.phoneticList[0]
@@ -499,16 +502,17 @@ swiper {
 
     //支付
     isShowPay(index){
+       let status = false
        if(this.currentNumber == 0 && !this.canSeeLearn() && index >= this.phoneticListCanUseNumber){
-           return true;
+           status = true;
        }
        else if(this.currentNumber == 1 && !this.canSeeRead2me() && index >= this.phoneticListCanUseNumber){
-           return true;
+           status = true;
        }
        else if(this.currentNumber == 2 && !this.canSeeInterest() && index >= this.phonetiClassCanUseNumber){
-           return true;
+           status = true;
        }
-       return false
+       return status
     }
 
     showPayView(){
@@ -648,7 +652,6 @@ swiper {
        
        if(!phonetiClassErr && phonetiClass.data.data && phonetiClass.data.data.list && phonetiClass.data.data.list.length > 0){
           this.setPhonetiClass(phonetiClass.data.data)
-         
           // wepy.setStorage({
           //        key: api.phonetiClass
           //        data: honetiClass.data.data
@@ -675,7 +678,7 @@ swiper {
     async getVipList(){
        let [vipListErr, vipList] =  await req.get(api.vipList)
        
-       if(!vipListErr && vipList.data.data){
+       if(!vipListErr && vipList.data.data && vipList.data.data.vip_list){
             this.setVipList(vipList.data.data.vip_list)
             wepy.setStorageSync(api.vipList, this.vipList)
 
@@ -694,16 +697,18 @@ swiper {
     }
 
     setVipList(vipList){
-            this.vipList = vipList
-            this.vipList.forEach(item=>{
+           this.vipList = vipList
+           this.vipList.forEach(item=>{
                 item.real_price2Int = parseInt(item.real_price)
                 item.price2Int = parseInt(item.price)
                 item.isVip = false
-                global.vips.forEach(vipId=>{
-                    if(vipId == item.id){
-                        item.isVip = true
-                    }
-                })
+                if(typeof global.vips == "array"){
+                  global.vips.forEach(vipId=>{
+                     if(vipId == item.id){
+                          item.isVip = true
+                      }
+                  })
+                }
                 if(item.isVip){
                     item.selectImg = "http://tic.upkao.com/Public/wxappImgs/pay-select-disable.png"
                 }else{
@@ -714,19 +719,11 @@ swiper {
             this.currentPayInfo = this.vipList[0]
     }
 
-    async login(){
-       let [loginErr, loginData] = await util.login()
-       if(loginErr){
-           return
-       }
-       if(loginData.data.code == "1"){
-          global.session = loginData.data.data.info.session
-       }
-    }
+
 
     async onLoad(params, data) {
-       
-       await this.login()
+
+       await util.login2()
        
        await this.getPhoneticList()
 
@@ -735,8 +732,6 @@ swiper {
        await this.getVipList()
        
     }
-
-
 
     onReady(e) {
         this.learnAudioCtx = wx.createInnerAudioContext('learnAudio')

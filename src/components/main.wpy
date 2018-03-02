@@ -158,14 +158,14 @@
   <swiper-item>
      <view class="container" @touchmove="touchMove" @touchstart="touchStart">
           <view class="content">
-            <swiper hidden="{{isHiddenList}}" class="list" current="{{currentIndex}}" @change="change()" duration="300">
+            <swiper hidden="{{isShowList}}" class="list" current="{{currentIndex}}" @change="change()" duration="300">
                   <slot></slot>
             </swiper>
             <block wx:if="{{hasListBtn}}">
-               <view hidden="{{!isHiddenList}}" class="image-list">
+               <view wx:if="{{isShowList}}" class="image-list">
                     <view  wx:for="{{vipPhoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
                        <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
-                       <block wx:if="{{(canSeeImageList|| index < canUseNumber) ? 1 : 0}}">
+                       <block wx:if="{{(canSeeImageList || index < canUseNumber) ? 1 : 0}}">
                         <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg.png" style="width:292rpx;height:180rpx" class="image-item-bg" ></image>
                        </block>
                        <block wx:else>
@@ -178,13 +178,13 @@
                </view>
             </block>
           </view>
-          <view class="nav" hidden="{{isHiddenList}}">
+          <view class="nav" wx:if="{{!isShowList}}">
              <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="clickArrow(-1)"></button>
               <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{currentNumber+1}}/{{vipPhoneticList.length}}</button>
               <button title="右" class="btn-right{{btnState.btnStateRight}}"  @tap="clickArrow(-2)"></button>
               <button @tap="toogleList()" wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
           </view>
-          <view hidden="{{!isHiddenList}}">
+          <view wx:if="{{isShowList}}">
               <button @tap="toogleList()" title="返回" class="btn-back" style="width:198rpx; height:105rpx; margin-top:15rpx;"></button>
           </view>
      </view>
@@ -195,7 +195,7 @@
 
   export default class Main extends wepy.component {
     data = {
-        isHiddenList: false,
+        isShowList: false,
         btnState: {
             btnStateLeft: " btn-left-disable",
             btnStateRigth: ""
@@ -242,7 +242,7 @@
                       this.showPayView()
                       return
                 } 
-                this.isHiddenList = false
+                this.isShowList = false
                 if(this.currentNumber != itemId ){
                     this.currentIndex = parseInt(itemId)
                 }
@@ -260,11 +260,11 @@
           }
        },
        toogleList(e){
-          this.isHiddenList = !this.isHiddenList
-          if(this.isHiddenList){
+          this.isShowList = !this.isShowList
+          if(this.isShowList){
               this.$parent.$parent.hideVideo()
           }
-          this.canSeeImageList = this.$parent.$parent.canSeeImageList()
+          this.canSeeImageList = this.$parent.$parent.canSeeImageList()  //会员都可以看
           this.$apply()
           this.$parent.$parent.$apply()
 
@@ -293,7 +293,6 @@
     }
 
  
-
     changeData(){
          if(this.$parent.$parent.currentIndex != 1){
             this.$parent.$parent.setVideoInfo(this.phoneticList[this.currentNumber])

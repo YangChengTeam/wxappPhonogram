@@ -16,7 +16,8 @@ const api = {
 	loginUrl : getUrl("init"),
 	phoneticList : getUrl("phonetic_list"),
 	phonetiClass: getUrl("phonetic_class"),
-	vipList: getUrl("vip_list")	
+	vipList: getUrl("vip_list"),
+	payUrl: getUrl("pay")
 }
 
 

@@ -130,12 +130,9 @@
        }
     }
 
-    
-
     async play(index, e){
-        let [ err, res ] = await util.authorizeRecord()
-
-        if(err){
+        let status = await util.authRecord()
+        if(!status){
             return
         }
 
@@ -147,7 +144,7 @@
            }
         }
         if(this.playCount > 3){
-           this.over()
+           this.playOver()
            return
         }
         if(this.playCount == 1){
@@ -163,7 +160,7 @@
          this.$parent.play(this.currentAudioSrc)
     }
 
-    over(){
+    playOver(){
        this.$parent.stop()
        this.currentr2mSrc = "http://tic.upkao.com/Public/wxappImgs/r2mholder.png"
        this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/play.png"

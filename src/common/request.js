@@ -3,11 +3,14 @@ import to from 'await-to-js'  //npm install await-to-js --save
 import md5 from 'md5'  // npm install md5 --save
 import sha256 from 'sha256'  //npm install --save sha256
 
+import api from '../common/config.js'
 import global from '../common/global.js'
 
-export default {	
+export default {
+    retryTimes: 0,	
 	async get(url, params){
 		let token = md5(url+global.session)
+		console.log(url+global.session)
 		let [err, data] = await to(wepy.request({
 			url: url,
 			method: 'GET',
@@ -46,9 +49,11 @@ export default {
 	},
 	 //检测session是否过期
 	async checkSession(data, callback){
-		 console.log(data)
-		 if(data.data.code == -101){
-		 	 let [loginErr, loginData] = await util.login()
+		 if(data.data && data.data.code && data.data.code == -101){
+		 	 if(++this.retryTimes > 3){
+		 	 	 return false
+		 	 }	
+		 	 let [loginErr, loginData] = await this.login()
        		 if(loginErr){
            		 return
        		 }
@@ -58,6 +63,30 @@ export default {
       		 }
       		 return false
 		 }
+		 this.retryTimes = 0
 		 return true
-	}
+	},
+
+	async login(){
+         let [login_err, res] = await to(wepy.login())
+         let [getUserInfo_err, userInfo] = await to(wepy.getUserInfo())
+         if(userInfo){
+            if(typeof userInfo.rawData === 'string'){
+                userInfo.rawData = JSON.parse(userInfo.rawData)
+            }
+            global.userInfo = userInfo.rawData
+            wepy.showLoading({
+                 mask: true,
+                 title: '正在登录...'
+            })
+            let [err, data ] = await this.post(api.loginUrl, Object.assign({
+            	 encryptedData: userInfo.encryptedData,
+                 code: res.code,
+            	 iv: userInfo.iv
+            }, userInfo.rawData))
+            wepy.hideLoading()
+            return [err, data ]
+         }
+         return [{errMsg: 'login fail'}, null]
+    }
 }

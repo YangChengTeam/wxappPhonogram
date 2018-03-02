@@ -383,14 +383,7 @@ swiper {
         },
         //关闭支付窗口
         closePayView(e){
-            this.isShowPayView = false
-            if(this.currentNumber == 0){
-               this.$invoke("learn", "back")
-            }else if(this.currentNumber == 1){
-               this.$invoke("read2me", "back")
-            }else if(this.currentNumber == 2){
-               this.$invoke("interest", "back")
-            }
+            this.closePayView()
         },
         //选择会员购买
         selectVip(index, e){
@@ -416,7 +409,10 @@ swiper {
           let status = await util.authLogin()
           if(status){
               await util.pay(this.currentPayInfo)
+              return
           }
+          this.closePayView()
+          this.$apply()
         }
     }
 
@@ -451,6 +447,17 @@ swiper {
 
             this.isMoved = true
       }
+    }
+
+    closePayView(){
+        this.isShowPayView = false
+        if(this.currentNumber == 0){
+               this.$invoke("learn", "back")
+        }else if(this.currentNumber == 1){
+               this.$invoke("read2me", "back")
+        }else if(this.currentNumber == 2){
+               this.$invoke("interest", "back")
+        }
     }
 
     //切换或移动之后的操作

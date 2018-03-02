@@ -24,7 +24,7 @@ export default {
     async checkLogin(){
        if(global.session.length == 0){
            let [err, res] = await to(wepy.getSetting())
-           if(!res || (res.authSetting["scope.userInfo"])){
+           if(res && res.authSetting["scope.userInfo"]){
                return -1  //已授权微信登录
            }
            return -2  //未授权微信登录
@@ -39,14 +39,15 @@ export default {
         }
         else if(status == -2){
             let [err, res] = await to(wepy.openSetting())
-            if(!res || !(res.authSetting["scope.userInfo"])){
-                wepy.showModal({
+            if(res  && res.authSetting["scope.userInfo"]){
+                  return true
+            }
+            wepy.showModal({
                         title: '提示',
                         content: '未授权获取用户信息, 无法使用【支付功能】',
                         showCancel: false
                 })
-                return false
-            }
+            return false
         }
 
         status = this.login2()
@@ -67,19 +68,20 @@ export default {
         }))
         let [settingErr, settingRes] = await to(wepy.getSetting())
 
-        if(!settingRes || !settingRes.authSetting["scope.record"]){
-             [settingErr, settingRes] = await to(wepy.openSetting())
-             if(!settingRes || !(settingRes.authSetting["scope.record"])){
-                wepy.showModal({
-                    title: '提示',
-                    content: '未授权录音功能, 无法使用【跟我读功能】',
-                    showCancel: false
-                })
-                return false
-             }
+        if(settingRes && settingRes.authSetting["scope.record"]){
              return true
         }
-        return true
+        [settingErr, settingRes] = await to(wepy.openSetting())
+
+        if(settingRes && settingRes.authSetting["scope.record"]){
+             return true
+        }
+        wepy.showModal({
+              title: '提示',
+              content: '未授权录音功能, 无法使用【跟我读功能】',
+              showCancel: false
+        })
+        return false
     },
 
     async pay(parInfo){

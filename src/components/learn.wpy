@@ -136,7 +136,7 @@
                <view class="video">
                    <image src="{{item.cover}}" class="video-cover"/>
                    <view class="video-play">
-                     <image @tap="playVideo()" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
+                     <image @tap="playVideo({{index}})" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
                    </view>
                </view>
                <view class="learn-desp">

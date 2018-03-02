@@ -245,7 +245,7 @@ swiper {
 
 </style>
 <template>
-    <video id="video" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" hidden="{{!isShowVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video id="video" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
 
     <audio id="learnAudio" hidden="true"></audio>
     <audio id="r2mAudio" hidden="true"></audio>
@@ -325,6 +325,8 @@ swiper {
         currentVideoPoster: '', //当前视频封面
         currentAudioSrc: '', //当前音频路径
         currentPayInfo: {},  //当前选择的支付信息
+        currentLearnVideoInfo: {},
+        currentInterestVideoInfo: {},
 
         vipPhoneticList: [],
         phoneticList: [],
@@ -345,7 +347,7 @@ swiper {
         },
 
         phonetiClassCanUseNumber: 1,
-        phoneticListCanUseNumber:9
+        phoneticListCanUseNumber:4
     }
 
     computed = {
@@ -366,20 +368,20 @@ swiper {
         },
         //swiper切换
         change(itemId , e){
-            let current = e.detail.current
             if(itemId.toString().length > 0){
-                current = itemId
-                if(this.currentNumber != current){
+                itemId = parseInt(itemId)
+                if(this.currentNumber != itemId){
                     this.currentIndex = itemId
                     this.currentNumber = itemId
+                    this.hideVideo()
                     this.$apply()
                 } 
                 return
             }
-            this.isChange = true
+            let current = e.detail.current
+            if(this.currentNumber == current) return  
             this.currentNumber = current
-            this.setAudioCtx()
-            this.changeData()
+            this.isChange = true
         },
         //关闭支付窗口
         closePayView(e){
@@ -473,51 +475,29 @@ swiper {
         }
         this.$apply()
     }
-    
-    //切换数据
-    changeData(){
-        let info;
-        if(this.currentNumber == 0){
-             info = this.phoneticList[0]
-         } else if(this.currentNumber == 2){
-             info = this.phonetiClassList[0]
-         }
-         this.hideVideo()
-         this.setVideoInfo(info)
-    }
 
     //vip检测
 
     //能看学音标模块
-    canSeeLearn(){
-        return false
-    }
-      
-    //能看学跟我读
-    canSeeRead2me(){
-        return false
-    }
-
-    //能看趣味音标
-    canSeeInterest(){
-        return false
+    isPhoneticListVip(){
+       return true
     }
     
-    //能看图片列表
-    canSeeImageList(){
-       return false
+    isPhonetiClass(){
+       return true
     }
+   
 
     //支付
     isShowPay(index){
        let status = false
-       if(this.currentNumber == 0 && !this.canSeeLearn() && index >= this.phoneticListCanUseNumber){
+       if(this.currentNumber == 0 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true;
        }
-       else if(this.currentNumber == 1 && !this.canSeeRead2me() && index >= this.phoneticListCanUseNumber){
+       else if(this.currentNumber == 1 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true;
        }
-       else if(this.currentNumber == 2 && !this.canSeeInterest() && index >= this.phonetiClassCanUseNumber){
+       else if(this.currentNumber == 2 && !this.isPhonetiClass() && index >= this.phonetiClassCanUseNumber){
            status = true;
        }
        return status
@@ -529,55 +509,49 @@ swiper {
 
 
     //视频
-
-    //设置视频信息
-    setVideoInfo(info){
-        if(!info) return
-        this.currentVideoSrc = info.video
-        this.currentVideoPoster = info.cover
-    }
-
-    playVideo(){
+    playVideo(index){
+        let info 
+        if(this.currentNumber == 0){
+           info = this.vipPhoneticList[index]
+        } else if(this.currentNumber == 2){
+           info = this.phonetiClassList[index]
+        }
+        if(info){
+            this.currentVideoSrc = info.video
+            this.currentVideoPoster = info.cover
+        }
         this.isShowVideo = true
-        this.videoCtx.play()
+        this.$nextTick().then(()=>{
+             this.videoCtx = wx.createVideoContext('video')
+             this.videoCtx.play()
+        })
     }
    
     //隐藏视频
     hideVideo(){
        this.isShowVideo = false
-       this.videoCtx.pause()
     }
 
     //音频
 
     //播放音频
     play(src){
-        this.audioCtx.src = src
+        if(this.currentNumber == 0){
+          this.audioCtx = this.learnAudioCtx
+        } else if(this.currentNumber == 1){
+          this.audioCtx = this.r2mAudioCtx
+        }        this.audioCtx.src = src
         this.audioCtx.play()
     }
 
+    //停止播放
     stop(){
-        this.r2mAudioCtx.stop()
         this.learnAudioCtx.stop()
-    }
-
-    setAudioCtx(){
-       if(this.currentNumber == 0){
-          this.audioCtx = this.learnAudioCtx
-          if(!this.isSetAudioLearnCallback){
-               this.setAudioLearnCallback()
-               this.isSetAudioLearnCallback = true
-          }
-       } else if(this.currentNumber == 1){
-          this.audioCtx = this.r2mAudioCtx
-          if(!this.isSetAudioInterestCallback){
-               this.setAudior2mCallback()
-               this.isSetAudioInterestCallback = true
-          }
-       }
+        this.r2mAudioCtx.stop()
     }
 
     //设置回调
+
     setAudior2mCallback(){
         //神坑 call设置多次 将会调用多次
         this.r2mAudioCtx.onEnded(()=>{
@@ -593,7 +567,6 @@ swiper {
         })
     }
 
-    
     setAudioLearnCallback(){
         this.learnAudioCtx.onEnded(()=>{
            this.$invoke('learn', 'playEnd')
@@ -646,12 +619,17 @@ swiper {
                    example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)
                })
           })
-          this.currentVideoSrc = this.vipPhoneticList[0].video
+         
+          if(this.isPhoneticListVip()){
+             this.phoneticList = this.vipPhoneticList
+          } else {
+             this.phoneticList = this.vipPhoneticList.slice(0, this.phoneticListCanUseNumber + 1)
+          }
           this.$apply()
           this.$nextTick().then(() => {
               wepy.hideLoading()
           });
-          this.phoneticList = this.vipPhoneticList.slice(0, this.phoneticListCanUseNumber + 1)
+
     }
   
     //获取趣味音标
@@ -724,7 +702,6 @@ swiper {
                 }
             })
             this.vipList[0]['selectImg'] = "http://tic.upkao.com/Public/wxappImgs/pay-select.png"
-            this.currentPayInfo = this.vipList[0]
     }
 
 
@@ -744,8 +721,8 @@ swiper {
     onReady(e) {
         this.learnAudioCtx = wx.createInnerAudioContext('learnAudio')
         this.r2mAudioCtx = wx.createInnerAudioContext('r2mAudio')
-        this.videoCtx = wx.createVideoContext('video')
-        this.setAudioCtx()
+        this.setAudior2mCallback()
+        this.setAudioLearnCallback()
     }
 
 

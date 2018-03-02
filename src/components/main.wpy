@@ -255,15 +255,15 @@ scroll-view {
                 }
                 return
           }
-          let current = e.detail.current   
+          let current = e.detail.current
+          if(this.currentNumber == current) return  
           this.currentNumber = current
           if(this.isShowPay(current)){
               this.showPayView()
               this.currentIndex = current          
-              return
           } else {
-              this.changeData()
-
+              this.clickArrow(this.currentNumber)
+              this.$parent.$parent.isChange = true
           }
        },
        toogleList(e){
@@ -271,7 +271,7 @@ scroll-view {
           if(this.isShowList){
               this.$parent.$parent.hideVideo()
           }
-          this.canSeeImageList = this.$parent.$parent.canSeeImageList()  //会员都可以看
+          this.canSeeImageList = this.$parent.$parent.isPhoneticListVip()  //会员都可以看
           this.$apply()
           this.$parent.$parent.$apply()
 
@@ -297,18 +297,6 @@ scroll-view {
         this.$parent.$parent.hideVideo()
         this.$parent.$parent.showPayView()
         this.$parent.$parent.$apply()
-    }
-
- 
-    changeData(){
-         if(this.$parent.$parent.currentIndex != 1){
-            this.$parent.$parent.setVideoInfo(this.phoneticList[this.currentNumber])
-         }  else {
-            this.$parent.$parent.hideVideo()
-         }
-         this.$parent.$parent.isChange = true
-         this.$parent.$parent.$apply()
-         this.clickArrow(this.currentNumber)
     }
 
     //点击左右按钮

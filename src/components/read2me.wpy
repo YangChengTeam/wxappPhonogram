@@ -162,6 +162,7 @@
 
     playOver(){
        this.$parent.stop()
+       this.stopRecord()
        this.currentr2mSrc = "http://tic.upkao.com/Public/wxappImgs/r2mholder.png"
        this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/play.png"
        this.playState = 4
@@ -195,7 +196,7 @@
        }
        else if(this.playState == 2){
           if(this.currentRecordSrc == ""){
-             this.record()
+             this.startRecord()
           } else {
              this.playState = 3
              this.$parent.play(this.currentRecordSrc)
@@ -222,7 +223,8 @@
        this.$apply()
     }
 
-    record(){
+    startRecord(){
+        this.skipCallback = false
         this.recorderManager.start({
             duration: 3000,
             sampleRate: 44100,
@@ -232,11 +234,15 @@
         })
     }
 
+    stopRecord(){
+         this.skipCallback = true
+         this.recorderManager.stop()
+    }
+
     onLoad () {
       this.recorderManager = wepy.getRecorderManager()
       this.recorderManager.onStart(() => {
           console.log('onStart')
-          
           wepy.showLoading({
                 mask: true,
                 title: '请开始跟读'
@@ -246,6 +252,7 @@
       })
 
       this.recorderManager.onStop((res) => {
+         if(this.skipCallback) return
          console.log('onStop')
          wepy.hideLoading()
          this.isShowProcessBar = false
@@ -256,11 +263,12 @@
       })
 
       this.recorderManager.onError((err) => {
+        if(this.skipCallback) return
          console.log(err)
          wepy.hideLoading()
          this.isShowProcessBar = false
          this.$apply()
-         this.record()
+         this.startRecord()
       })
     }
   }

@@ -244,7 +244,7 @@
                 } 
                 this.isShowList = false
                 if(this.currentNumber != itemId ){
-                    this.currentIndex = parseInt(itemId)
+                    this.currentIndex = itemId
                 }
                 return
           }

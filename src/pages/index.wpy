@@ -371,6 +371,7 @@ swiper {
                 current = itemId
                 if(this.currentNumber != current){
                     this.currentIndex = itemId
+                    this.currentNumber = itemId
                     this.$apply()
                 } 
                 return

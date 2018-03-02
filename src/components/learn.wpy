@@ -180,9 +180,9 @@
 
     mixins = [Common]
 
-    methods = {  
+    methods = {
+       //播放 文字
        play(idx, e){
-          console.log(idx)
           if(this.audioType == idx){
               return
           }
@@ -199,7 +199,11 @@
           } 
           this.$parent.play(this.currntAudioSrc)
        },
+       //播放 图片
        playSample(index, e){
+            if(this.audioType == index){
+                  return
+            }
             this.audioType = index
             this.phoneticList[index].sampleAnimation = " learn-image-sample-animate"
             this.currntAudioSrc = this.phoneticList[index]['voice']
@@ -228,12 +232,7 @@
       this.$apply()
     }
 
-    
-
-    //隐藏视频
-    hideVideo(){
-        this.$invoke('main', 'hideVideo');
-    }
+  
 
     onLoad () {
     }

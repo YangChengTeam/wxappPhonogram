@@ -245,7 +245,7 @@ swiper {
 
 </style>
 <template>
-    <video id="video" src="{{currentVideoSrc}}" class="key-video" hidden="{{!isShowVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video id="video" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" hidden="{{!isShowVideo}}" poster="{{currentVideoPoster}}"></video>
 
     <audio id="learnAudio" hidden="true"></audio>
     <audio id="r2mAudio" hidden="true"></audio>
@@ -331,12 +331,12 @@ swiper {
         phonetiClassList: [],
         phonetiClassInfo: {},
         vipList: [],
+
+
         isMoved: false,
         isChange: false,
-
         isShowVideo: false,
         isShowPayView: false,
-        showViewTimer: null,
 
         scrollState: {
             pageX: 0,
@@ -379,7 +379,7 @@ swiper {
             }
             this.isChange = true
             this.currentNumber = current
-            this.setVideoCtx()
+            this.setAudioCtx()
             this.changeData()
         },
         //关闭支付窗口
@@ -392,7 +392,6 @@ swiper {
             }else if(this.currentNumber == 2){
                this.$invoke("interest", "back")
             }
-            // this.showVideo()
         },
         //选择会员购买
         selectVip(index, e){
@@ -432,38 +431,34 @@ swiper {
         if(Math.abs(touchMoveY - this.scrollState.pageY) > 5){
               return
         }
-
-      
         let offset = Math.abs(touchMoveX - this.scrollState.pageX) 
         if(offset > 5){
-          if(this.currentNumber == 0 || this.currentNumber == 2){
-             this.hideVideo()
-             this.$apply()
-          }
-        } else {
-            return
-        }
+            this.switched()
+        
+            if(touchMoveX > this.scrollState.pageX){
+               this.scrollState.isLeft = true
+               this.scrollState.isRight = false
+            }else{
+               this.scrollState.isRight = true
+               this.scrollState.isLeft = false
+            }
 
-        if(touchMoveX > this.scrollState.pageX){
-            this.scrollState.isLeft = true
-            this.scrollState.isRight = false
-        }else{
-            this.scrollState.isRight = true
-            this.scrollState.isLeft = false
-        }
-
-        this.switched()
-        this.isMoved = true
+            this.isMoved = true
+      }
     }
 
     //切换之后的操作
     switched(){
+        if(this.currentNumber == 0 || this.currentNumber == 2){
+             this.hideVideo()
+        }
         if(this.currentNumber == 0 || this.currentNumber == 2){
             this.stop()
             this.$invoke('learn', 'playEnd')
         } else {
             this.$invoke('read2me', 'over')
         }
+        this.$apply()
     }
     
     //切换数据
@@ -478,7 +473,6 @@ swiper {
          }
          this.hideVideo()
          this.setVideoInfo(info)
-         // this.showVideo()
     }
 
     //vip检测
@@ -555,7 +549,7 @@ swiper {
         this.learnAudioCtx.stop()
     }
 
-    setVideoCtx(){
+    setAudioCtx(){
        if(this.currentNumber == 0){
           this.audioCtx = this.learnAudioCtx
           if(!this.isSetAudioLearnCallback){
@@ -564,25 +558,45 @@ swiper {
           }
        } else if(this.currentNumber == 1){
           this.audioCtx = this.r2mAudioCtx
+          if(!this.isSetAudioInterestCallback){
+               this.setAudior2mCallback()
+               this.isSetAudioInterestCallback = true
+          }
        }
     }
 
-    //设置learn
+    //设置回调
+    setAudior2mCallback(){
+        //神坑 call设置多次 将会调用多次
+        this.r2mAudioCtx.onEnded(()=>{
+            this.$invoke('read2me', 'playEnd')
+        })
+
+        this.r2mAudioCtx.onPlay(()=>{
+            this.$invoke('read2me', 'playing')
+        })
+
+        this.r2mAudioCtx.onError((res)=>{
+            this.$invoke('read2me', 'playEnd')
+        })
+    }
+
+    
     setAudioLearnCallback(){
-        this.audioCtx.onEnded(()=>{
+        this.learnAudioCtx.onEnded(()=>{
            this.$invoke('learn', 'playEnd')
         })
 
-        this.audioCtx.onPlay(()=>{
+        this.learnAudioCtx.onPlay(()=>{
            this.$invoke('learn', 'playing')
         })
 
-        this.audioCtx.onError((res)=>{
-            this.audioCtx.play()
+        this.learnAudioCtx.onError((res)=>{
+           this.learnAudioCtx.play()
         })
     }
     
-    //接口  注 缓存严重影响性能
+    //接口  注 影响性能
 
     //获取拼音列表
     async getPhoneticList(){
@@ -718,7 +732,7 @@ swiper {
         this.learnAudioCtx = wx.createInnerAudioContext('learnAudio')
         this.r2mAudioCtx = wx.createInnerAudioContext('r2mAudio')
         this.videoCtx = wx.createVideoContext('video')
-        this.setVideoCtx()
+        this.setAudioCtx()
     }
 
 

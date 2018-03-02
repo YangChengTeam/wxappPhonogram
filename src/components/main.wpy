@@ -292,12 +292,7 @@
         this.$parent.$parent.$apply()
     }
 
-    hideVideo(){
-       if(this.isHiddenList){
-          this.$parent.$parent.hideVideo()
-          this.$parent.$parent.$apply()
-       }
-    }
+ 
 
     changeData(){
          if(this.$parent.$parent.currentIndex != 1){

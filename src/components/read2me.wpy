@@ -130,25 +130,7 @@
        }
     }
 
-    setAudior2mCallback(){
-        //神坑 call设置多次 将会调用多次
-        if(this.isSetAudioCall){
-           return
-        }
-        this.isSetAudioCall = true
-        this.$parent.audioCtx.onEnded(()=>{
-            this.playEnd()
-        })
-
-        this.$parent.audioCtx.onPlay(()=>{
-            this.playing()
-        })
-
-        this.$parent.audioCtx.onError((res)=>{
-            this.playEnd(true)
-            console.log(res)
-        })
-    }
+    
 
     async play(index, e){
         let [ err, res ] = await util.authorizeRecord()
@@ -178,7 +160,6 @@
          this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/loading.png"
          this.currentIndex = index
          this.$apply()
-         this.setAudior2mCallback()
          this.$parent.play(this.currentAudioSrc)
     }
 

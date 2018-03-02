@@ -242,6 +242,7 @@
     onLoad () {
       this.recorderManager = wepy.getRecorderManager()
       this.recorderManager.onStart(() => {
+          if(this.skipCallback) return
           console.log('onStart')
           wepy.showLoading({
                 mask: true,

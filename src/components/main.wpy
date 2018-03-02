@@ -112,17 +112,22 @@
    background-size: 100% 100%;
 }
 
+scroll-view {
+    width: @lw;
+    height: @lh;
+    margin-top: @lmt;
+}
+
 .image-list {
   display:flex;
   justify-content: space-between;
   align-items: flex-start;
   width: @lw;
   height: @lh;
-  margin-top: @lmt;
   flex-wrap: wrap;
   flex-direction: row;
   align-content: flex-start;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .image-item {
@@ -162,7 +167,8 @@
                   <slot></slot>
             </swiper>
             <block wx:if="{{hasListBtn}}">
-               <view wx:if="{{isShowList}}" class="image-list">
+             <scroll-view wx:if="{{isShowList}}" scroll-y="true">
+               <view  class="image-list">
                     <view  wx:for="{{vipPhoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
                        <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
                        <block wx:if="{{(canSeeImageList || index < canUseNumber) ? 1 : 0}}">
@@ -176,6 +182,7 @@
                        </block>
                     </view>
                </view>
+             </scroll-view>
             </block>
           </view>
           <view class="nav" wx:if="{{!isShowList}}">

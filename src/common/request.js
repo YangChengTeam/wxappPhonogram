@@ -8,7 +8,7 @@ import global from '../common/global.js'
 export default {	
 	async get(url, params){
 		let token = md5(url+global.session)
-		return await to(wepy.request({
+		let [err, data] = await to(wepy.request({
 			url: url,
 			method: 'GET',
 			dataType: 'json',
@@ -18,11 +18,16 @@ export default {
 			   	Token: md5(sha256(token))
 			}
 		}))
+		if(this.checkSession(data,()=>{
+			this.get(url, params)
+		})){
+			return [err, data]
+		}
+		
 	},
-
 	async post(url, params){
 		let token = md5(url+JSON.stringify(params)+global.session)
-		return await to(wepy.request({
+		let [err, data] = await to(wepy.request({
 			url: url,
 			method: 'POST',
 			data: params,
@@ -33,5 +38,26 @@ export default {
 			   	'content-type':'application/x-www-form-urlencoded'
 			}
 		}))
+		if(this.checkSession(data, ()=>{
+			this.post(url, params)
+		})){
+			return [err, data]
+		}
+	},
+	 //检测session是否过期
+	async checkSession(data, callback){
+		 console.log(data)
+		 if(data.data.code == -101){
+		 	 let [loginErr, loginData] = await util.login()
+       		 if(loginErr){
+           		 return
+       		 }
+       		 if(loginData.data.code == "1"){
+          		global.session = loginData.data.data.info.session
+          		callback()
+      		 }
+      		 return false
+		 }
+		 return true
 	}
 }

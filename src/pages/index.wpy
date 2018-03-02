@@ -447,7 +447,7 @@ swiper {
       }
     }
 
-    //切换之后的操作
+    //切换或移动之后的操作
     switched(){
         if(this.currentNumber == 0 || this.currentNumber == 2){
              this.hideVideo()
@@ -714,10 +714,20 @@ swiper {
             this.currentPayInfo = this.vipList[0]
     }
 
-    async onLoad(params, data) {
+    async login(){
+       let [loginErr, loginData] = await util.login()
+       if(loginErr){
+           return
+       }
+       if(loginData.data.code == "1"){
+          global.session = loginData.data.data.info.session
+       }
+    }
 
-       console.log(await util.login())
-      
+    async onLoad(params, data) {
+       
+       await this.login()
+       
        await this.getPhoneticList()
 
        await this.getPhonetiClass()

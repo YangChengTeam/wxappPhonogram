@@ -84,31 +84,41 @@ export default {
         return false
     },
 
+
+
     async pay(parInfo){
-        let [_package, timeStamp] = ['' , '']
-        let [err, data] = await to(req.get(`${api.payUrl}&goods_id=${parInfo.id}&goods_num=1`))
-        console.log([err, data])
-        // let randomNoceStr = this.randomNoceStr(16)
-        // wepy.requestPayment({
-        //     timeStamp: timeStamp,
-        //     package: _package,
-        //     nonceStr: randomNoceStr,
-        //     signType: 'MD5',
-        //     paySign: this.getPaySign(randomNoceStr, _package, timeStamp)
-        // })
+        let [err, res] = await req.get(`${api.payUrl}&goods_id=${parInfo.id}&goods_num=1`)
+        if(res && res.data && res.data.code == 1){
+            let randomNoceStr = res.data.data.info.nonce_str
+            let _package = `prepay_id=${res.data.data.info.prepay_id}`
+            let timeStamp = res.data.data.info.timeStamp
+            let sign = res.data.data.info.sign
+            let [payErr, payData] = await to(wepy.requestPayment({
+                     timeStamp: timeStamp.toString(),
+                     package: _package,
+                     nonceStr: randomNoceStr,
+                     signType: 'MD5',
+                     paySign: sign
+            }))
+            console.log([payErr, payData])
+            return [payErr, payData]
+        }
+        let msg = '请求【支付参数】失败'
+        if(err){
+            msg = err.errMsg
+        } else if(res && res.data){
+            msg = res.data.msg
+        }
+        wepy.showToast({
+              title: msg,
+              icon: 'none'
+        })
     },
 
-    randomNoceStr(n){
-        let text = "";
-        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (let i = 0; i < n; i++)
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        return text;
-    },
 
-    getPaySign(randomNoceStr, _package, timeStamp){
-        return md5(`appId=${global.appId}&nonceStr=${randomNoceStr}&package=${_package}&signType=MD5&timeStamp=${timeStamp}&key=${global.key}`)
-    }
+    // getPaySign(randomNoceStr, _package, timeStamp){
+    //     return md5(`appId=${global.appId}&nonceStr=${randomNoceStr}&package=${_package}&signType=MD5&timeStamp=${timeStamp}&key=${global.key}`)
+    // }
 
 
 }

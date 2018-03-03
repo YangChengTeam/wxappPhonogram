@@ -131,6 +131,7 @@
     }
 
     async play(index, e){
+
         let status = await util.authRecord()
         if(!status){
             return
@@ -172,6 +173,7 @@
     }
     
     stop(){
+        this.stopRecord()
         this.currentr2mSrc = "http://tic.upkao.com/Public/wxappImgs/r2mholder.png"
         this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/play.png"
         this.playState = 0
@@ -235,8 +237,13 @@
     }
 
     stopRecord(){
-         this.skipCallback = true
-         this.recorderManager.stop()
+         try{
+            wepy.hideLoading()
+         }catch(e){}finally{
+            this.isShowProcessBar = false
+            this.skipCallback = true
+            this.recorderManager.stop()
+         }
     }
 
     onLoad () {

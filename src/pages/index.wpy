@@ -371,9 +371,9 @@ swiper {
             if(itemId.toString().length > 0){
                 itemId = parseInt(itemId)
                 if(this.currentNumber != itemId){
+                    this.switched()
                     this.currentIndex = itemId
                     this.currentNumber = itemId
-                    this.hideVideo()
                     this.$apply()
                 } 
                 return
@@ -480,7 +480,7 @@ swiper {
 
     //能看学音标模块
     isPhoneticListVip(){
-       return true
+       return false
     }
     
     isPhonetiClass(){
@@ -702,6 +702,7 @@ swiper {
                 }
             })
             this.vipList[0]['selectImg'] = "http://tic.upkao.com/Public/wxappImgs/pay-select.png"
+            this.currentPayInfo = this.vipList[0]
     }
 
 

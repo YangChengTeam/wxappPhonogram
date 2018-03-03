@@ -171,7 +171,7 @@ scroll-view {
                <view  class="image-list">
                     <view  wx:for="{{vipPhoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
                        <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
-                       <block wx:if="{{(canSeeImageList || index < canUseNumber) ? 1 : 0}}">
+                       <block wx:if="{{((phoneticList.length == vipPhoneticList.length) || index < canUseNumber) ? 1 : 0}}">
                         <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg.png" style="width:292rpx;height:180rpx" class="image-item-bg" ></image>
                        </block>
                        <block wx:else>
@@ -208,7 +208,6 @@ scroll-view {
             btnStateRigth: ""
         },
         tipIndex: 0,
-        canSeeImageList: false,
         currentNumber: 0,   //currentIndex相同  目的避免生swiper current导致重复渲染
         currentIndex: 0
     }
@@ -222,7 +221,6 @@ scroll-view {
           type: Array,
           default: []
        },
-
        phoneticList: {
            type: Array,
            default: []
@@ -269,12 +267,8 @@ scroll-view {
        toogleList(e){
           this.isShowList = !this.isShowList
           if(this.isShowList){
-              this.$parent.$parent.hideVideo()
+              this.$parent.$parent.switched()
           }
-          this.canSeeImageList = this.$parent.$parent.isPhoneticListVip()  //会员都可以看
-          this.$apply()
-          this.$parent.$parent.$apply()
-
        },
        clickArrow(n, e){
            this.clickArrow(n)

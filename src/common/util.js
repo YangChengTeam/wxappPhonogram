@@ -84,21 +84,18 @@ export default {
         return false
     },
 
-
-
     async pay(parInfo){
         let [err, res] = await req.get(`${api.payUrl}&goods_id=${parInfo.id}&goods_num=1`)
         if(res && res.data && res.data.code == 1){
             let randomNoceStr = res.data.data.info.nonce_str
             let _package = `prepay_id=${res.data.data.info.prepay_id}`
             let timeStamp = res.data.data.info.timeStamp
-            let sign = res.data.data.info.sign
             let [payErr, payData] = await to(wepy.requestPayment({
                      timeStamp: timeStamp.toString(),
                      package: _package,
                      nonceStr: randomNoceStr,
                      signType: 'MD5',
-                     paySign: sign
+                     paySign: this.getPaySign(randomNoceStr, _package, timeStamp)
             }))
             console.log([payErr, payData])
             return [payErr, payData]
@@ -116,9 +113,9 @@ export default {
     },
 
 
-    // getPaySign(randomNoceStr, _package, timeStamp){
-    //     return md5(`appId=${global.appId}&nonceStr=${randomNoceStr}&package=${_package}&signType=MD5&timeStamp=${timeStamp}&key=${global.key}`)
-    // }
+    getPaySign(randomNoceStr, _package, timeStamp){
+        return md5(`appId=${global.appId}&nonceStr=${randomNoceStr}&package=${_package}&signType=MD5&timeStamp=${timeStamp}&key=${global.key}`)
+    }
 
 
 }

@@ -372,15 +372,16 @@ swiper {
                 itemId = parseInt(itemId)
                 if(this.currentNumber != itemId){
                     this.switched()
+                    console.log(itemId)
                     this.currentIndex = itemId
                     this.currentNumber = itemId
-                    this.$apply()
                 } 
                 return
             }
             let current = e.detail.current
             if(this.currentNumber == current) return  
             this.currentNumber = current
+            this.currentIndex = current
             this.isChange = true
         },
         //关闭支付窗口

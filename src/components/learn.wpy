@@ -210,14 +210,16 @@
        },
        //播放 图片
        playSample(index, e){ 
-             if(this.audioType == 'sample' && this.currentIndex ==  parseInt(index)) {
+            if(this.audioType == 'sample' && this.currentIndex ==  parseInt(index)) {
                  return
-             }
+            }
+             wepy.showLoading({
+              title: '加载音频中...'
+            })
             this.resetPlayState()
             this.audioType = 'sample'
             this.currentIndex = index
             this.currntAudioSrc = this.phoneticList[index]['voice']
-            console.log(this.currntAudioSrc)
             this.$parent.play(this.currntAudioSrc)
        }
     }
@@ -226,7 +228,6 @@
        if(this.currentIndex == -1){
            return
        }
-       wepy.hideLoading()
        if(this.audioType == "example"){
            this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['animation'] = ''
        } else if(this.audioType == 'sample'){

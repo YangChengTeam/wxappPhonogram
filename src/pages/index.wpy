@@ -498,8 +498,8 @@ swiper {
         } else {
             this.$invoke('read2me', 'playOver')
         }
+        wepy.hideLoading()
         this.$apply()
-
     }
 
     //vip检测

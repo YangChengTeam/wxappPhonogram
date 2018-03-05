@@ -413,25 +413,24 @@ swiper {
           if(status == -2 || status == -1){
              return
           }
-          console.log(global.vips)
-          if(global.vips.includes(parseInt(this.currentPayInfo.id))){
-                  this.setVip()
-          } else {
-              let [err, status]= await to(util.pay(this.currentPayInfo))
-              if(status){
-                  this.setVip()
-              }
+          if(this.isPhoneticListVip() || this.isPhonetiClassVip()){
+               this.setVip()
+               return
+          } 
+
+          let [err, pstatus]= await to(util.pay(this.currentPayInfo))
+          if(pstatus){
+              this.setVip()
           }
-          
         }
     }
 
-    async setVip(){
+    setVip(){
       if(this.isPhoneticListVip()){
-          this.phoneticList = this.vipPhoneticList  
+          this.phoneticList = this.vipPhoneticList 
       } 
       if(this.isPhonetiClassVip()){
-          this.phonetiClassList = this.vipPhonetiClassList  
+          this.phonetiClassList = this.vipPhonetiClassList 
       }
       wepy.showLoading({
          title: '数据加载中...'

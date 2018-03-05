@@ -70,6 +70,8 @@
     animation: record-process-bar-animate 3s;
 }
 
+
+
 </style>
 <template>
   <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList">

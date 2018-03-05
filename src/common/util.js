@@ -28,7 +28,7 @@ export default {
        if(global.session.length == 0){
            let [err, res] = await to(wepy.getSetting())
            if(res && res.authSetting["scope.userInfo"]){
-               return -1  //已授权微信登录
+               return -1  //已授权微信登录 登录失败
            }
            return -2  //未授权微信登录
        }
@@ -38,31 +38,33 @@ export default {
     async authLogin(){
         let status = await this.checkLogin()
         if(status == 0){
-            return true
+            return 0
         }
-        else if(status == -2){
+        
+        if(status == -2){
             let [err, res] = await to(wepy.openSetting())
-            if(res  && res.authSetting["scope.userInfo"]){
-                  return true
-            }
-            wepy.showModal({
+            if(!res  || !res.authSetting["scope.userInfo"]){
+                wepy.showModal({
                         title: '提示',
                         content: '未授权获取用户信息, 无法使用【支付功能】',
                         showCancel: false
                 })
-            return false
+                return -2
+            }
         }
 
-        status = this.login2()
+        status = await this.login2()
         if(!status){
             wepy.showModal({
                 title: '提示',
-                content: '登录失败',
+                content: '登录失败,请重试',
                 showCancel: false
             })
+            return -1
         }
-        return status
+        return 0
     },
+
 
 
     async authRecord(){

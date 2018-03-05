@@ -2,6 +2,7 @@ import wepy from 'wepy'
 
 export default class Common extends wepy.mixin {
   data = {
+      currentIndex: -1
   }
 
   props = {

@@ -103,6 +103,9 @@
 50%  {transform: scale(1.5,1.5);}
 100% {transform: scale(1, 1);}
 }
+.learn-word-sample-animate {
+    animation: learn-word-sample-animate 3s;
+}
 
 @keyframes learn-image-sample-animate
 {
@@ -112,9 +115,6 @@
 100% {transform: scale(1.0, 1.0);}
 }
 
-.learn-word-sample-animate {
-    animation: learn-word-sample-animate 3s;
-}
 
 .learn-image-sample-animate {
     animation: learn-image-sample-animate 3s;
@@ -170,7 +170,8 @@
   export default class Learn extends wepy.component {
     data = {
         currntAudioSrc: '',
-        audioType: 'default'
+        audioType: 'desc',  //sample example
+        currentExampleIndex: -1
     }
 
     components = {
@@ -182,53 +183,79 @@
     methods = {
        //播放 文字
        play(idx, e){
-          if(this.audioType == idx){
-              return
-          }
-          this.playEnd()
-          this.audioType = idx
+          this.resetPlayState()
+          wepy.showLoading({
+              title: '加载音频中...'
+          })
           if(idx.toString().indexOf('-') > -1){
+             
              let idxs = idx.split('-')
-             this.currntAudioSrc = this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['video']
-             this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['animation'] = ' learn-word-sample-animate'
-             this.$apply()
+             if(this.audioType == 'example' && this.currentIndex ==  parseInt(idxs[0]) && this.currentExampleIndex == parseInt(idxs[1])) {
+                 return
+             }
+             this.audioType = 'example'
+             this.currentIndex = parseInt(idxs[0])
+             this.currentExampleIndex = parseInt(idxs[1])
+             this.currntAudioSrc = this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['video']
           } else {
-             this.phoneticList[parseInt(idx)].playingImg = "http://tic.upkao.com/Public/wxappImgs/reading.gif"
+             if(this.audioType == 'desc' && this.currentIndex ==  parseInt(idx)) {
+                 return
+             }
+             this.audioType = 'desc'
+             this.currentIndex = parseInt(idx)
+             this.currentExampleIndex = -1
              this.currntAudioSrc = this.phoneticList[parseInt(idx)]['desp_audio']
           } 
           this.$parent.play(this.currntAudioSrc)
        },
        //播放 图片
-       playSample(index, e){
-            if(this.audioType == index){
-                  return
-            }
-            this.audioType = index
-            this.phoneticList[index].sampleAnimation = " learn-image-sample-animate"
+       playSample(index, e){ 
+             if(this.audioType == 'sample' && this.currentIndex ==  parseInt(index)) {
+                 return
+             }
+            this.resetPlayState()
+            this.audioType = 'sample'
+            this.currentIndex = index
             this.currntAudioSrc = this.phoneticList[index]['voice']
+            console.log(this.currntAudioSrc)
             this.$parent.play(this.currntAudioSrc)
        }
     }
 
+    resetPlayState(){
+       if(this.currentIndex == -1){
+           return
+       }
+       wepy.hideLoading()
+       if(this.audioType == "example"){
+           this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['animation'] = ''
+       } else if(this.audioType == 'sample'){
+           this.phoneticList[this.currentIndex].sampleAnimation = ""
+       } else if(this.audioType == 'desc'){
+           this.phoneticList[this.currentIndex].playingImg = "/images/click2read.png"
+       }
+       this.$apply()
+       this.$parent.stop()
+       this.audioType = ''
+       
+    }
+
     //播放音频
     playing(){
-       if(this.audioType.toString().indexOf('-') == -1){
-          this.$apply()
-       } 
+       wepy.hideLoading()
+       if(this.audioType == "example"){
+           this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['animation'] = ' learn-word-sample-animate'
+       } else if(this.audioType == 'sample'){
+          this.phoneticList[this.currentIndex].sampleAnimation = "learn-image-sample-animate"
+       } else if(this.audioType == 'desc'){
+           this.phoneticList[this.currentIndex].playingImg = "http://tic.upkao.com/Public/wxappImgs/reading.gif"
+       }
+       this.$apply()
     }
 
     //音频播放结束
     playEnd(){
-      if(this.audioType == 'default') return
-      if(this.audioType.toString().indexOf('-') == -1){
-          this.phoneticList[parseInt(this.audioType)].playingImg = "http://tic.upkao.com/Public/wxappImgs/click2read.png"
-          this.phoneticList[parseInt(this.audioType)].sampleAnimation = ""
-      } else {
-          let idxs = this.audioType.split('-')
-          this.phoneticList[parseInt(idxs[0])]['example'][parseInt(idxs[1])]['animation'] = ''
-      }
-      this.audioType  = 'default'
-      this.$apply()
+      this.resetPlayState()      
     }
 
   

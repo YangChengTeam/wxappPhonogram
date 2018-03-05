@@ -313,11 +313,7 @@ scroll-view {
           if(this.currentNumber >= this.vipPhoneticList.length - 1){
                this.btnState.btnStateLeft = ""
                this.btnState.btnStateRight = " btn-right-disable"
-          } else {
-              this.btnState.btnStateLeft = ""
-              this.btnState.btnStateRight = ""
-          }
-          if(this.currentNumber <= 0){
+          } else if(this.currentNumber <= 0){
               this.btnState.btnStateRight = ""
               this.btnState.btnStateLeft = "  btn-left-disable"      
           } else {

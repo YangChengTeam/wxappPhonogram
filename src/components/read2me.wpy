@@ -157,7 +157,6 @@
          this.playState = 0 
          this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/loading.png"
          this.currentIndex = index
-         this.$apply()
          this.$parent.play(this.currentAudioSrc)
     }
 

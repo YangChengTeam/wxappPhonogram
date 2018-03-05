@@ -16,6 +16,9 @@ export default {
        if(loginData.data.code == "1" && loginData.data.data && loginData.data.data.info){
           global.session = loginData.data.data.info.session || ''
           global.vips =  loginData.data.data.vip || []
+          for(let i =0 ; i < global.vips.length ; i++){
+              global.vips[i] = parseInt(global.vips[i])
+          }
           return true
        }
        return false
@@ -84,8 +87,13 @@ export default {
         return false
     },
 
-    async pay(parInfo){
-        let [err, res] = await req.get(`${api.payUrl}&goods_id=${parInfo.id}&goods_num=1`)
+    async pay(payInfo){
+        wepy.showLoading({
+          mask: true,
+          title: '请求支付参数...'
+        })
+        let [err, res] = await req.get(`${api.payUrl}&goods_id=${payInfo.id}&goods_num=1`)
+        wepy.hideLoading()
         if(res && res.data && res.data.code == 1){
             let randomNoceStr = res.data.data.info.nonce_str
             let _package = `prepay_id=${res.data.data.info.prepay_id}`
@@ -97,8 +105,15 @@ export default {
                      signType: 'MD5',
                      paySign: this.getPaySign(randomNoceStr, _package, timeStamp)
             }))
-            console.log([payErr, payData])
-            return [payErr, payData]
+            if(payErr){
+                wepy.showToast({
+                    title: '支付取消',
+                    icon: 'none'
+                })
+                return false
+            }
+            global.vips.push(payInfo.id)
+            return true
         }
         let msg = '请求【支付参数】失败'
         if(err){
@@ -110,12 +125,11 @@ export default {
               title: msg,
               icon: 'none'
         })
+        return false
     },
 
 
     getPaySign(randomNoceStr, _package, timeStamp){
         return md5(`appId=${global.appId}&nonceStr=${randomNoceStr}&package=${_package}&signType=MD5&timeStamp=${timeStamp}&key=${global.key}`)
     }
-
-
 }

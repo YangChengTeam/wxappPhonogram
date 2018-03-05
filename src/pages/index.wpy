@@ -261,7 +261,7 @@ swiper {
     <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish()" duration="100">
         <learn :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber" :vipPhoneticList.sync="vipPhoneticList"></learn>
         <read2me :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber" :vipPhoneticList.sync="vipPhoneticList"></read2me>
-        <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :canUseNumber.sync="phonetiClassCanUseNumber"></interest>
+        <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :vipPhonetiClassList.sync="vipPhonetiClassList"></interest>
     </swiper>
 
     <image wx:if="{{currentNumber == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
@@ -280,11 +280,11 @@ swiper {
                             <view class="pay-old-price">原价¥{{item.price2Int}}元</view>
                         </view>
                    </view>
-                   <image @tap="selectVip({{index}})" class="pay-select" src="{{item.selectImg}}"></image>
+                   <image @tap="selectVip({{index}})" class="pay-select" src="{{item.isVip ? 'http://tic.upkao.com/Public/wxappImgs/pay-select-disable.png' : item.selectImg}}"></image>
                 </view>
                  
                 <view class="pay-confirm-wrap">
-                <button class="pay-confirm" @tap="pay()"></button>
+                <button class="pay-confirm" @tap="pay(item.isVip)"></button>
                 </view>
             </view>
           </view>
@@ -332,6 +332,7 @@ swiper {
         phoneticList: [],
         phonetiClassList: [],
         phonetiClassInfo: {},
+        vipPhonetiClassList: [],
         vipList: [],
 
         isMoved: false,
@@ -407,10 +408,23 @@ swiper {
             console.log(this.currentPayInfo)
         },
         //确认购买
-        async pay(e){
+        async pay(isVip, e){
+          if(isVip){
+             wepy.showToast({
+                title: '你已经拥有该功能， 不需要重复购买',
+                icon: 'none'
+             })
+             return
+          }
           let status = await util.authLogin()
           if(status){
-              await util.pay(this.currentPayInfo)
+              let [err, res] = await util.pay(this.currentPayInfo)
+              if(this.isPhoneticListVip){
+                  this.phoneticList = this.vipPhoneticList  
+              } 
+              if(this.isPhonetiClassVip){
+                  this.phonetiClassList = this.vipPhonetiClassList  
+              } 
               return
           }
           this.closePayView()
@@ -480,11 +494,11 @@ swiper {
 
     //能看学音标模块
     isPhoneticListVip(){
-       return false
+         return global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) || global.vips.includes(5) 
     }
     
-    isPhonetiClass(){
-       return true
+    isPhonetiClassVip(){
+       return global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) 
     }
    
 
@@ -497,7 +511,7 @@ swiper {
        else if(this.currentNumber == 1 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true;
        }
-       else if(this.currentNumber == 2 && !this.isPhonetiClass() && index >= this.phonetiClassCanUseNumber){
+       else if(this.currentNumber == 2 && !this.isPhonetiClassVip() && index >= this.phonetiClassCanUseNumber){
            status = true;
        }
        return status
@@ -540,7 +554,8 @@ swiper {
           this.audioCtx = this.learnAudioCtx
         } else if(this.currentNumber == 1){
           this.audioCtx = this.r2mAudioCtx
-        }        this.audioCtx.src = src
+        } 
+        this.audioCtx.src = src
         this.audioCtx.play()
     }
 
@@ -609,6 +624,7 @@ swiper {
        
     }
 
+
     setPhoneticList(phoneticList){
           this.vipPhoneticList = phoneticList
           this.vipPhoneticList.forEach((item)=>{
@@ -656,7 +672,12 @@ swiper {
 
     setPhonetiClass(data){
         this.phonetiClassInfo = data.info
-        this.phonetiClassList = data.list
+        this.vipPhonetiClassList = data.list
+        if(this.isPhonetiClassVip()){
+             this.phonetiClassList = this.vipPhonetiClassList
+        } else {
+             this.phonetiClassList = this.vipPhonetiClassList.slice(0, this.phonetiClassCanUseNumber + 1)
+        }
         this.$apply()
     }
    
@@ -688,13 +709,12 @@ swiper {
                 item.real_price2Int = parseInt(item.real_price)
                 item.price2Int = parseInt(item.price)
                 item.isVip = false
-                if(typeof global.vips == "array"){
-                  global.vips.forEach(vipId=>{
+
+                global.vips.forEach(vipId=>{
                      if(vipId == item.id){
                           item.isVip = true
                       }
-                  })
-                }
+                })
                 if(item.isVip){
                     item.selectImg = "http://tic.upkao.com/Public/wxappImgs/pay-select-disable.png"
                 }else{

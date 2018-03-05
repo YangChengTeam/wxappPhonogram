@@ -80,7 +80,7 @@
 }
 </style>
 <template>
-<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="phonetiClassList">
+<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="phonetiClassList" :vipPhoneticList.sync="vipPhonetiClassList">
     <swiper-item wx:for="{{phonetiClassList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" >
      <view class="interest-content" @touchmove="touchMove" @touchstart="touchStart">
         <view class="video">
@@ -128,7 +128,11 @@
        canUseNumber: {
           type: Number,
           default: 1
-       }
+       },
+       vipPhonetiClassList: {
+          type: Array,
+          default: []
+       },
     }
 
     mixins = [Common]

@@ -284,7 +284,7 @@ swiper {
                 </view>
                  
                 <view class="pay-confirm-wrap">
-                <button class="pay-confirm" @tap="pay(item.isVip)"></button>
+                <button class="pay-confirm" @tap="pay()"></button>
                 </view>
             </view>
           </view>
@@ -408,25 +408,29 @@ swiper {
             console.log(this.currentPayInfo)
         },
         //确认购买
-        async pay(isVip, e){
-          if(isVip){
+        async pay(e){
+          if(global.vips.includes(this.currentPayInfo.id)){
              wepy.showToast({
                 title: '你已经拥有该功能， 不需要重复购买',
                 icon: 'none'
              })
+
              return
           }
           let status = await util.authLogin()
           if(status){
-              let [err, res] = await util.pay(this.currentPayInfo)
+              await to(util.pay(this.currentPayInfo))
               if(this.isPhoneticListVip){
                   this.phoneticList = this.vipPhoneticList  
               } 
               if(this.isPhonetiClassVip){
                   this.phonetiClassList = this.vipPhonetiClassList  
               } 
+              this.closePayView()
+              this.$apply()
               return
           }
+          
           this.closePayView()
           this.$apply()
         }

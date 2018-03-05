@@ -305,7 +305,7 @@ scroll-view {
                   this.showPayView()
                   return
               }
-              this.$parent.$parent.hideVideo()
+              this.$parent.$parent.switched()
               this.$parent.$parent.$apply()
               this.currentIndex = current
               this.currentNumber = current     

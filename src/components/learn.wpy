@@ -214,7 +214,7 @@
                  return
             }
              wepy.showLoading({
-              title: '加载音频中...'
+              title: '数据加载中...'
             })
             this.resetPlayState()
             this.audioType = 'sample'

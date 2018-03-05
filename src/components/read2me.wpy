@@ -160,6 +160,7 @@
          this.currentBtnSrc = "http://tic.upkao.com/Public/wxappImgs/loading.png"
          this.currentIndex = index
          this.$parent.play(this.currentAudioSrc)
+         this.$apply()
     }
 
     playOver(){

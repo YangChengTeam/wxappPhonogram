@@ -434,7 +434,7 @@ swiper {
           this.phonetiClassList = this.vipPhonetiClassList  
       }
       wepy.showLoading({
-         title: '会员数据加载中'
+         title: '数据加载中...'
       })
       this.closePayView()
       this.$apply()   

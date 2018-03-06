@@ -31,15 +31,15 @@
   margin-left:4%;
 }
 
-.learn-desp > view > view {
+.learn-desp > view > scroll-view {
     display:inline-block;
+    width: 70%;
     height:80%;
     margin-left: 150rpx;
     margin-right: 20rpx;
     margin-top: 20rpx;
     color: #000000;
     font-size: 27rpx;
-    overflow-y:auto;
 }
 
 .learn-desp > image {
@@ -141,9 +141,9 @@
                </view>
                <view class="learn-desp">
                    <view>
-                       <view>
+                       <scroll-view scroll-y="true">
                            {{item.desp}}
-                       </view>
+                       </scroll-view>
                    </view>
                    <image src="{{item.playingImg}}"  @tap="play({{index}})" />
                </view>
@@ -184,11 +184,10 @@
        //播放 文字
        play(idx, e){
           this.resetPlayState()
-          wepy.showLoading({
-              title: '加载音频中...'
-          })
+           wepy.showLoading({
+            title: '正在加载...'
+         })
           if(idx.toString().indexOf('-') > -1){
-             
              let idxs = idx.split('-')
              if(this.audioType == 'example' && this.currentIndex ==  parseInt(idxs[0]) && this.currentExampleIndex == parseInt(idxs[1])) {
                  return
@@ -213,10 +212,10 @@
             if(this.audioType == 'sample' && this.currentIndex ==  parseInt(index)) {
                  return
             }
-             wepy.showLoading({
-              title: '数据加载中...'
-            })
             this.resetPlayState()
+             wepy.showLoading({
+            title: '正在加载...'
+           })
             this.audioType = 'sample'
             this.currentIndex = index
             this.currntAudioSrc = this.phoneticList[index]['voice']
@@ -225,6 +224,7 @@
     }
 
     resetPlayState(){
+      
        if(this.currentIndex == -1){
            return
        }

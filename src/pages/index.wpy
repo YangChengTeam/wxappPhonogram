@@ -433,7 +433,7 @@ swiper {
           this.phonetiClassList = this.vipPhonetiClassList 
       }
       wepy.showLoading({
-         title: '数据加载中...'
+         title: '正在加载...'
       })
       this.closePayView()
       this.$apply()   
@@ -750,11 +750,30 @@ swiper {
        
     }
 
-    onReady(e) {
+    onReady(res) {
         this.learnAudioCtx = wx.createInnerAudioContext('learnAudio')
         this.r2mAudioCtx = wx.createInnerAudioContext('r2mAudio')
         this.setAudior2mCallback()
         this.setAudioLearnCallback()
+    }
+
+    onShareAppMessage(res){
+        return {
+              title: '语文拼音点读小程序上线了，每天十分钟，十天就会读拼音',
+              path: '/pages/index',
+              success: function(res) {
+                  wepy.showToast({
+                      title: '分享成功'
+                  })
+              },
+              fail: function(res) {
+                  let msg = res.errMsg
+                  wepy.showToast({
+                      title: msg ? msg : '分享失败',
+                      icon: 'none'
+                  })
+              }
+        }
     }
 
 

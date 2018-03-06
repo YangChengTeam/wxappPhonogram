@@ -196,6 +196,7 @@
              this.currentIndex = parseInt(idxs[0])
              this.currentExampleIndex = parseInt(idxs[1])
              this.currntAudioSrc = this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['video']
+
           } else {
              if(this.audioType == 'desc' && this.currentIndex ==  parseInt(idx)) {
                  return
@@ -204,8 +205,17 @@
              this.currentIndex = parseInt(idx)
              this.currentExampleIndex = -1
              this.currntAudioSrc = this.phoneticList[parseInt(idx)]['desp_audio']
+             
           } 
-          this.$parent.play(this.currntAudioSrc)
+          if(this.currntAudioSrc){
+              this.$parent.play(this.currntAudioSrc)
+          } else {
+              wepy.hideLoading()
+              wepy.showToast({
+                  title: '音频文件不存在',
+                  icon: 'none'
+              })
+          }
        },
        //播放 图片
        playSample(index, e){ 

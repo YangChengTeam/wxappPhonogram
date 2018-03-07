@@ -2,6 +2,6 @@ export default {
 	session: '',
 	userInfo: {},
 	vips: [],
-	appId: 'wx59219a90869dea00',
-	key: 'b76f883016782d8e6cda2f873eda3a1b'
+	appId: 'wxa58d2a4f677d7347',
+	key: '6855c27ff1c45c1406d97dedd7fde004'
 }

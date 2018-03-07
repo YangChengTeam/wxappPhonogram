@@ -339,6 +339,8 @@ swiper {
         isShowVideo: false,
         isShowPayView: false,
 
+        retryTimes: 0,
+
         scrollState: {
             pageX: 0,
             pageY: 0,
@@ -619,20 +621,29 @@ swiper {
 
        if(!phoneticListErr && phoneticList.data.data && phoneticList.data.data.list && phoneticList.data.data.list.length > 0){
           this.setPhoneticList(phoneticList.data.data.list)
-          // wepy.setStorage({
-          //   key: api.phoneticList,
-          //   data: this.phoneticList
-          // })
+          wepy.setStorage({
+            key: api.phoneticList,
+            data: this.vipPhoneticList
+          })
           return
-       } 
+       }
 
-       // wepy.getStorage({
-       //    key : api.phoneticList
-       // }).then((data)=>{
-       //     console.log(data)
-       //     this.setPhoneticList(data.data)
-       // })
-       
+       let [cacheErr, cacheRes] = await to(wepy.getStorage({
+          key : api.phoneticList
+       }))
+
+       if(cacheRes && cacheRes.data && cacheRes.length > 0){
+            this.setPhoneticList(cacheRes.data)
+            return
+       }
+
+       if(this.retryTimes++ >= 3){
+          this.retryTimes = 0
+          return
+       }
+
+       this.getPhoneticList()
+      
     }
 
 
@@ -665,19 +676,19 @@ swiper {
        
        if(!phonetiClassErr && phonetiClass.data.data && phonetiClass.data.data.list && phonetiClass.data.data.list.length > 0){
           this.setPhonetiClass(phonetiClass.data.data)
-          // wepy.setStorage({
-          //        key: api.phonetiClass
-          //        data: honetiClass.data.data
-          // })  
+          wepy.setStorage({
+                 key: api.phonetiClass,
+                 data: phonetiClass.data.data
+          })
           return
        }
 
 
-      // wepy.getStorage({
-      //     key : api.phonetiClass
-      //  }).then((data)=>{
-      //      this.setPhonetiClass(data.data)
-      //  })
+       wepy.getStorage({
+          key : api.phonetiClass
+       }).then((res)=>{
+           this.setPhonetiClass(res.data)
+       })
   
     } 
 
@@ -698,20 +709,18 @@ swiper {
        
        if(!vipListErr && vipList.data.data && vipList.data.data.vip_list){
             this.setVipList(vipList.data.data.vip_list)
-            wepy.setStorageSync(api.vipList, this.vipList)
-
-            // wepy.setStorage({
-            //      key: api.vipList,
-            //      data: this.vipList
-            //  })
+            wepy.setStorage({
+                 key: api.vipList,
+                 data: this.vipList
+             })
             return
        }
 
-       // wepy.getStorage({
-       //    key : api.vipList
-       // }).then((data)=>{
-       //     this.setVipList(data.data)
-       // })
+       wepy.getStorage({
+          key : api.vipList
+       }).then((res)=>{
+           this.setVipList(res.data)
+       })
     }
 
     setVipList(vipList){
@@ -736,8 +745,6 @@ swiper {
             this.currentPayInfo = this.vipList[0]
     }
 
-
-
     async onLoad(params, data) {
 
        await util.login2()
@@ -759,7 +766,7 @@ swiper {
 
     onShareAppMessage(res){
         return {
-              title: '语文拼音点读小程序上线了，每天十分钟，十天就会读拼音',
+              title: '语文拼音学习点读小程序上线了，每天十分钟，十天就会读拼音',
               path: '/pages/index',
               success: function(res) {
                   wepy.showToast({

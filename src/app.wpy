@@ -7,10 +7,6 @@
 import wepy from 'wepy'
 import 'wepy-async-function'
 
-import util from '@/common/util.js'
-import global from '@/common/global.js'
-import api from '@/common/config.js'
-import req from '@/common/request.js'
 
 export default class extends wepy.app {
   config = {

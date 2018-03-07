@@ -244,7 +244,7 @@ swiper {
 
 </style>
 <template>
-    <video id="video" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video id="video" custom-cache="false" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
 
     <audio id="learnAudio" hidden="true"></audio>
     <audio id="r2mAudio" hidden="true"></audio>

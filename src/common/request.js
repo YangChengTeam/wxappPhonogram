@@ -69,6 +69,7 @@ export default {
 
 	async login(){
          let [login_err, res] = await to(wepy.login())
+         
          let [getUserInfo_err, userInfo] = await to(wepy.getUserInfo())
          if(userInfo){
             if(typeof userInfo.rawData === 'string'){

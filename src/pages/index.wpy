@@ -507,7 +507,7 @@ swiper {
 
     //能看学音标模块
     isPhoneticListVip(){
-         return global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) || global.vips.includes(5) 
+       return global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) || global.vips.includes(5) 
     }
     
     isPhonetiClassVip(){
@@ -631,8 +631,9 @@ swiper {
        let [cacheErr, cacheRes] = await to(wepy.getStorage({
           key : api.phoneticList
        }))
-
+       console.log(cacheRes)
        if(cacheRes && cacheRes.data && cacheRes.data.length > 0){
+            console.log(cacheRes.data)
             this.setPhoneticList(cacheRes.data)
             return
        }
@@ -749,16 +750,14 @@ swiper {
             this.currentPayInfo = this.vipList[0]
     }
 
-    async onLoad(params, data) {
+    onLoad(params, data) {
+       this.getPhoneticList()
 
-       await util.login2()
-       
-       await this.getPhoneticList()
+       util.login2()
 
-       await this.getPhonetiClass()
+       this.getPhonetiClass()
 
-       await this.getVipList()
-       
+       this.getVipList()
     }
 
     onReady(res) {

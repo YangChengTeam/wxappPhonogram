@@ -544,7 +544,7 @@ swiper {
            info = this.phonetiClassList[index]
         }
         if(info){
-            this.currentVideoSrc = info.video
+            this.currentVideoSrc = encodeURI(info.video)
             this.currentVideoPoster = info.cover
         }
         this.isShowVideo = true
@@ -632,7 +632,7 @@ swiper {
           key : api.phoneticList
        }))
 
-       if(cacheRes && cacheRes.data && cacheRes.length > 0){
+       if(cacheRes && cacheRes.data && cacheRes.data.length > 0){
             this.setPhoneticList(cacheRes.data)
             return
        }
@@ -687,7 +687,9 @@ swiper {
        wepy.getStorage({
           key : api.phonetiClass
        }).then((res)=>{
-           this.setPhonetiClass(res.data)
+           if(res && res.data){
+              this.setPhonetiClass(res.data)
+           }
        })
   
     } 
@@ -719,7 +721,9 @@ swiper {
        wepy.getStorage({
           key : api.vipList
        }).then((res)=>{
+         if(res && res.data){
            this.setVipList(res.data)
+         }
        })
     }
 

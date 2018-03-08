@@ -65,8 +65,6 @@ export default {
         return 0
     },
 
-
-
     async authRecord(){
         let [err, res] = await to(wepy.authorize({
             scope: 'scope.record'

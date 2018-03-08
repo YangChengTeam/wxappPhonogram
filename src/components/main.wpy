@@ -187,7 +187,7 @@ scroll-view {
           </view>
           <view class="nav" wx:if="{{!isShowList}}">
              <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="clickArrow(-1)"></button>
-              <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{currentNumber+1}}/{{vipPhoneticList.length}}</button>
+              <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{((currentNumber + 1) + '') == 'NaN' ? 1 : (currentNumber + 1)}}/{{vipPhoneticList.length}}</button>
               <button title="右" class="btn-right{{btnState.btnStateRight}}"  @tap="clickArrow(-2)"></button>
               <button @tap="toogleList()" wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
           </view>
@@ -211,6 +211,8 @@ scroll-view {
         currentNumber: 0,   //currentIndex相同  目的避免生swiper current导致重复渲染
         currentIndex: 0
     }
+
+    
     
     props = {
        hasListBtn: {

@@ -618,7 +618,7 @@ swiper {
           title: '正在加载...'
        })
        let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
-
+       
        if(!phoneticListErr && phoneticList.data.data && phoneticList.data.data.list && phoneticList.data.data.list.length > 0){
           this.setPhoneticList(phoneticList.data.data.list)
           wepy.setStorage({
@@ -631,7 +631,7 @@ swiper {
        let [cacheErr, cacheRes] = await to(wepy.getStorage({
           key : api.phoneticList
        }))
-       console.log(cacheRes)
+
        if(cacheRes && cacheRes.data && cacheRes.data.length > 0){
             console.log(cacheRes.data)
             this.setPhoneticList(cacheRes.data)
@@ -643,6 +643,7 @@ swiper {
           return
        }
 
+       wepy.hideLoading()
        this.getPhoneticList()
       
     }
@@ -658,7 +659,7 @@ swiper {
                    example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)
                })
           })
-         
+        
           if(this.isPhoneticListVip()){
              this.phoneticList = this.vipPhoneticList
           } else {
@@ -674,7 +675,7 @@ swiper {
     //获取趣味音标
     async getPhonetiClass(){
        let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
-       
+        
        if(!phonetiClassErr && phonetiClass.data.data && phonetiClass.data.data.list && phonetiClass.data.data.list.length > 0){
           this.setPhonetiClass(phonetiClass.data.data)
           wepy.setStorage({

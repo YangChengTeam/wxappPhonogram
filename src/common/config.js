@@ -1,7 +1,7 @@
-const debug = true
+const debug = false
 const host = {
 	dev: "https://tic.upkao.com",  //测试服务器
-	pro: ""   //正式服务器
+	pro: "https://tic.upkao.com"   //正式服务器
 }
 
 function getBaseUrl(){

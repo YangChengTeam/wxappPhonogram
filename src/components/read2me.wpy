@@ -132,13 +132,7 @@
        }
     }
 
-    async play(index, e){
-
-        let status = await util.authRecord()
-        if(!status){
-            return
-        }
-
+    play(index, e){
         if(e){
            this.isPlaying = !this.isPlaying
            if(!this.isPlaying){
@@ -227,7 +221,12 @@
        this.$apply()
     }
 
-    startRecord(){
+    async startRecord(){
+        let status = await util.authRecord()
+        if(!status){
+            this.stop()
+            return
+        }
         this.skipCallback = false
         this.recorderManager.start({
             duration: 3000,

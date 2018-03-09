@@ -751,10 +751,12 @@ swiper {
             this.currentPayInfo = this.vipList[0]
     }
 
-    onLoad(params, data) {
+     onLoad(params, data) {
        this.getPhoneticList()
 
-       util.login2()
+       util.login2(()=>{
+           this.setVip()
+       })
 
        this.getPhonetiClass()
 

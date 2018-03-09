@@ -248,7 +248,7 @@ scroll-view {
                 if(this.isShowPay(itemId)){
                       this.showPayView()
                       return
-                } 
+                }
                 this.isShowList = false
                 if(this.currentNumber != itemId ){
                     this.currentIndex = itemId

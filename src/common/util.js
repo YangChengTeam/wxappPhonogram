@@ -8,7 +8,7 @@ import global from '../common/global.js'
 
 export default {
 
-    async login2(){
+    async login2(callbck){
        let [loginErr, loginData] = await req.login()
        if(loginErr){
            return false
@@ -18,6 +18,9 @@ export default {
           global.vips =  loginData.data.data.vip || []
           for(let i =0 ; i < global.vips.length ; i++){
               global.vips[i] = parseInt(global.vips[i])
+              if(callbck){
+                 callbck()
+              }
           }
           return true
        }

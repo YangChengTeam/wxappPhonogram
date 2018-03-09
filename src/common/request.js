@@ -10,7 +10,6 @@ export default {
     retryTimes: 0,	
 	async get(url, params){
 		let token = md5(url+global.session)
-		console.log(url+global.session)
 		let [err, data] = await to(wepy.request({
 			url: url,
 			method: 'GET',

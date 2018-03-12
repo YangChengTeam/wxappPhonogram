@@ -82,6 +82,60 @@ swiper {
    left:0;
 }
 
+.share {
+   position: fixed;
+   width: 100%;
+   height: 100%;
+   background: rgba(0,0,0,0.5);
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   align-items: center;
+   top:0;
+   left:0;
+}
+
+.share-bg {
+   width: 702rpx;
+   height: 462rpx;
+   background:url('http://tic.upkao.com/Public/wxappImgs/share-bg.png');
+   background-size: 100% 100%;
+   margin-top: 300rpx;
+}
+
+.share-desc {
+   margin-top: 50rpx;
+   margin-left: 80rpx;
+   margin-right: 80rpx;
+   color: #b05739;
+   height:215rpx;
+   font-size: 32rpx;
+   display:flex;
+   align-items:center;
+   justify-content:center;
+}
+
+.share-close {
+    width: 97rpx;
+    height: 97rpx;
+    background: url('http://tic.upkao.com/Public/wxappImgs/pay-close.png') no-repeat;
+    background-size: 100% 100%;
+    margin-top:50rpx;
+}
+
+.share-confirm {
+    background: url('http://tic.upkao.com/Public/wxappImgs/share-btn.png') no-repeat;
+    background-size: 100% 100%;
+    width: 618rpx;
+    height: 108rpx;
+    margin-top: 35rpx;
+}
+
+.share-confirm:hover {
+    background: url('http://tic.upkao.com/Public/wxappImgs/share-btn-hover.png') no-repeat;
+    background-size: 100% 100%;
+}
+
 .pay-ppw-bg {
     width: 702rpx;
     height: 879rpx;
@@ -244,7 +298,7 @@ swiper {
 
 </style>
 <template>
-    <video id="video" custom-cache="false" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video id="video"  show-progress="true" autoplay="true" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
 
     <audio id="learnAudio" hidden="true"></audio>
     <audio id="r2mAudio" hidden="true"></audio>
@@ -258,13 +312,13 @@ swiper {
     </view>
 
     <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish()" duration="100">
-        <learn :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber" :vipPhoneticList.sync="vipPhoneticList"></learn>
-        <read2me :phoneticList.sync="phoneticList" :canUseNumber.sync="phoneticListCanUseNumber" :vipPhoneticList.sync="vipPhoneticList"></read2me>
+        <learn :phoneticList.sync="learnPhoneticList" :canUseNumber.sync="phoneticListCanUseNumber" :vipPhoneticList.sync="vipPhoneticList"></learn>
+        <read2me :phoneticList.sync="r2mPhoneticList" :canUseNumber.sync="phoneticListCanUseNumber" :vipPhoneticList.sync="vipPhoneticList"></read2me>
         <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :vipPhonetiClassList.sync="vipPhonetiClassList"></interest>
     </swiper>
 
-    <image wx:if="{{currentNumber == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
-    <view class="pay-ppw" wx:if="{{isShowPayView}}">
+<!--     <image wx:if="{{currentNumber == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
+ -->   <!--  <view class="pay-ppw" wx:if="{{isShowPayView}}">
           <view class="pay-ppw-bg">
              <view class="pay-content">
                 <view class="pay-item" wx:for="{{vipList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">    
@@ -288,7 +342,16 @@ swiper {
             </view>
           </view>
           <button class="pay-close" @tap="closePayView()"></button>
-    </view>
+    </view> -->
+
+    <view class="share" wx:if="{{isShowPayView}}">
+      <view class="share-bg">
+          <view class="share-desc"><text>亲，分享到微信群后即可解锁后面的学习内容哦！</text></view>
+          <button class="share-confirm" open-type="share"></button>
+
+      </view>
+     <button class="share-close" @tap="closePayView()"></button>
+    </view> 
 </template>
 
 <script>
@@ -328,10 +391,13 @@ swiper {
         currentInterestVideoInfo: {},
 
         vipPhoneticList: [],
-        phoneticList: [],
+        learnPhoneticList: [],
+        r2mPhoneticList: [],
+
+        vipPhonetiClassList: [],
         phonetiClassList: [],
         phonetiClassInfo: {},
-        vipPhonetiClassList: [],
+        
         vipList: [],
 
         isMoved: false,
@@ -349,7 +415,7 @@ swiper {
         },
 
         phonetiClassCanUseNumber: 1,
-        phoneticListCanUseNumber:4
+        phoneticListCanUseNumber: 4
     }
 
     computed = {
@@ -362,7 +428,6 @@ swiper {
            if(this.isChange || this.scrollState.isLeft || this.scrollState.isRight){
               this.switched()
            }
-        
            this.scrollState.isLeft = false
            this.scrollState.isRight = false
            this.isChange = false
@@ -374,16 +439,15 @@ swiper {
                 itemId = parseInt(itemId)
                 if(this.currentNumber != itemId){
                     this.switched()
-                    console.log(itemId)
                     this.currentIndex = itemId
                     this.currentNumber = itemId
+                    this.isChange = true
                 } 
                 return
             }
             let current = e.detail.current
             if(this.currentNumber == current) return  
             this.currentNumber = current
-            this.currentIndex = current
             this.isChange = true
         },
         //关闭支付窗口
@@ -407,7 +471,6 @@ swiper {
                     item.selectImg = "http://tic.upkao.com/Public/wxappImgs/pay-select-bg.png"
                 }
             })
-            console.log(this.currentPayInfo)
         },
         //确认购买
         async pay(e){ 
@@ -429,7 +492,8 @@ swiper {
 
     setVip(){
       if(this.isPhoneticListVip()){
-          this.phoneticList = this.vipPhoneticList 
+          this.learnPhoneticList = util.copyObject(this.vipPhoneticList)
+          this.r2mPhoneticList = util.copyObject(this.vipPhoneticList)
       } 
       if(this.isPhonetiClassVip()){
           this.phonetiClassList = this.vipPhonetiClassList 
@@ -507,18 +571,18 @@ swiper {
 
     //能看学音标模块
     isPhoneticListVip(){
-       return global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) || global.vips.includes(5) 
+       return global.share_ids.length > 0 || global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) || global.vips.includes(5) 
     }
     
     isPhonetiClassVip(){
-       return global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) 
+       return global.share_ids.length > 0 || global.vips.includes(8) || global.vips.includes(7)  || global.vips.includes(6) 
     }
    
 
     //支付
     isShowPay(index){
        let status = false
-       if(this.currentNumber == 0 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
+       if( this.currentNumber == 0 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true;
        }
        else if(this.currentNumber == 1 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
@@ -530,10 +594,10 @@ swiper {
        return status
     }
 
-    showPayView(){
+    showPayView(id){
+        this.shareId = id
         this.isShowPayView = true
     }
-
 
     //视频
     playVideo(index){
@@ -544,13 +608,15 @@ swiper {
            info = this.phonetiClassList[index]
         }
         if(info){
-            this.currentVideoSrc = encodeURI(info.video)
+            this.currentVideoSrc = (info.video)
             this.currentVideoPoster = info.cover
         }
+        console.log(info.video)
         this.isShowVideo = true
         this.$nextTick().then(()=>{
              this.videoCtx = wx.createVideoContext('video')
              this.videoCtx.play()
+
         })
     }
    
@@ -649,27 +715,34 @@ swiper {
     }
 
 
+
     setPhoneticList(phoneticList){
           this.vipPhoneticList = phoneticList
-          this.vipPhoneticList.forEach((item)=>{
+          this.vipPhoneticList.forEach((item, k)=>{
                item.animation = ''
                item.sampleAnimation = ''
                item.playingImg = '/images/click2read.png'
                item.example.forEach((example)=>{
                    example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)
                })
+               if( this.isPhoneticListVip() || k < this.phoneticListCanUseNumber){
+                   item.isShowLock = false
+               } else {
+                   item.isShowLock = true
+               }
           })
-        
+
           if(this.isPhoneticListVip()){
-             this.phoneticList = this.vipPhoneticList
+             this.learnPhoneticList = util.copyObject(this.vipPhoneticList)
+             this.r2mPhoneticList = util.copyObject(this.vipPhoneticList)
           } else {
-             this.phoneticList = this.vipPhoneticList.slice(0, this.phoneticListCanUseNumber + 1)
+             this.learnPhoneticList = util.copyObject(this.vipPhoneticList.slice(0, this.phoneticListCanUseNumber + 1))
+             this.r2mPhoneticList = util.copyObject(this.vipPhoneticList.slice(0, this.phoneticListCanUseNumber + 1))
           }
           this.$apply()
           this.$nextTick().then(() => {
               wepy.hideLoading()
           });
-
     }
   
     //获取趣味音标
@@ -684,7 +757,6 @@ swiper {
           })
           return
        }
-
 
        wepy.getStorage({
           key : api.phonetiClass
@@ -751,13 +823,17 @@ swiper {
             this.currentPayInfo = this.vipList[0]
     }
 
-     onLoad(params, data) {
+    onLoad(params, data) {
+      try{
+        global.share_ids = wepy.getStorageSync("share_ids") || []
+     }catch(e){
+        global.share_ids = []
+     }
        this.getPhoneticList()
 
        util.login2(()=>{
            this.setVip()
        })
-
        this.getPhonetiClass()
 
        this.getVipList()
@@ -771,13 +847,34 @@ swiper {
     }
 
     onShareAppMessage(res){
+        let self = this
         return {
-              title: '语文拼音学习点读小程序上线了，每天十分钟，十天就会读拼音',
+              title: '拼音学习点读小程序上线了，每天十分钟，十天就会读拼音',
               path: '/pages/index',
               success: function(res) {
                   wepy.showToast({
                       title: '分享成功'
                   })
+                  if(self.shareId != undefined){
+                      self.closePayView()
+                      self.$apply()
+                      global.share_ids.push(self.shareId)
+                      console.log(global.share_ids)
+                      self.shareId = undefined
+                      wepy.setStorage({
+                         key: "share_ids",
+                         data: global.share_ids
+                      })
+                      self.vipPhoneticList.forEach((item, k)=>{
+                          if( self.isPhoneticListVip() || k < self.phoneticListCanUseNumber){
+                                item.isShowLock = false
+                          } else {
+                                item.isShowLock = true
+                          }
+                      })
+                      self.setVip()
+                      self.$apply()
+                  }
               },
               fail: function(res) {
                   let msg = res.errMsg

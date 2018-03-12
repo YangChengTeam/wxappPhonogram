@@ -134,5 +134,15 @@ export default {
 
     getPaySign(randomNoceStr, _package, timeStamp){
         return md5(`appId=${global.appId}&nonceStr=${randomNoceStr}&package=${_package}&signType=MD5&timeStamp=${timeStamp}&key=${global.key}`)
+    },
+
+    copyObject(o) {
+      var output, v, key;
+      output = Array.isArray(o) ? [] : {};
+      for (key in o) {
+          v = o[key];
+          output[key] = (typeof v === "object") ? this.copyObject(v) : v;
+      }
+      return output;  
     }
 }

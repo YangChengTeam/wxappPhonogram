@@ -76,7 +76,6 @@
 <template>
   <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList">
     <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">
-
      <view class="read2me-content" @touchmove="touchMove" @touchstart="touchStart"> 
         <view class="read2me-process">
             <text>跟读进度: {{playCount}}/3</text>

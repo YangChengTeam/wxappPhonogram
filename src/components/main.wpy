@@ -171,7 +171,7 @@ scroll-view {
                <view  class="image-list">
                     <view  wx:for="{{vipPhoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item" @tap="change({{index}})">
                        <image src="{{item['img']}}" style="width:272rpx;height:160rpx" class="image-item-info"></image>
-                       <block wx:if="{{((phoneticList.length == vipPhoneticList.length) || index < canUseNumber) ? 1 : 0}}">
+                       <block wx:if="{{!item.isShowLock}}">
                         <image src="http://tic.upkao.com/Public/wxappImgs/image-item-bg.png" style="width:292rpx;height:180rpx" class="image-item-bg" ></image>
                        </block>
                        <block wx:else>
@@ -186,7 +186,7 @@ scroll-view {
             </block>
           </view>
           <view class="nav" wx:if="{{!isShowList}}">
-             <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="clickArrow(-1)"></button>
+              <button title="左" class="btn-left{{btnState.btnStateLeft}}" @tap="clickArrow(-1)"></button>
               <button title="指示" class="btn-tip" style="width:186rpx; height:76rpx; color:#fff; line-height: 76rpx; font-weight: bold;">{{((currentNumber + 1) + '') == 'NaN' ? 1 : (currentNumber + 1)}}/{{vipPhoneticList.length}}</button>
               <button title="右" class="btn-right{{btnState.btnStateRight}}"  @tap="clickArrow(-2)"></button>
               <button @tap="toogleList()" wx:if="{{hasListBtn}}" title="列表" class="btn-list"></button>
@@ -230,6 +230,11 @@ scroll-view {
        canUseNumber: {
           type: Number,
           default: 9
+       },
+       isShowContent:{
+          type: Boolean,
+          default: false,
+          twoWay: true
        }
     }
 
@@ -246,12 +251,14 @@ scroll-view {
           if(itemId.toString().length > 0){
                 itemId = parseInt(itemId)
                 if(this.isShowPay(itemId)){
-                      this.showPayView()
+                      this.showPayView(this.vipPhoneticList[itemId].id)
                       return
                 }
                 this.isShowList = false
                 if(this.currentNumber != itemId ){
                     this.currentIndex = itemId
+                    this.currentNumber = itemId
+                    this.clickArrow(this.currentNumber)
                 }
                 return
           }
@@ -259,7 +266,7 @@ scroll-view {
           if(this.currentNumber == current) return  
           this.currentNumber = current
           if(this.isShowPay(current)){
-              this.showPayView()
+              this.showPayView(this.vipPhoneticList[current].id)
               this.currentIndex = current          
           } else {
               this.clickArrow(this.currentNumber)
@@ -289,9 +296,9 @@ scroll-view {
         return this.$parent.$parent.isShowPay(index)
     }
 
-    showPayView(){
+    showPayView(id){
         this.$parent.$parent.hideVideo()
-        this.$parent.$parent.showPayView()
+        this.$parent.$parent.showPayView(id)
         this.$parent.$parent.$apply()
     }
 
@@ -304,13 +311,13 @@ scroll-view {
               }
               var current = (this.currentNumber) + ((n == -1) ? n : 1)
               if(this.isShowPay(current)){
-                  this.showPayView()
+                  this.showPayView(this.vipPhoneticList[current].id)
                   return
               }
               this.$parent.$parent.switched()
               this.$parent.$parent.$apply()
               this.currentIndex = current
-              this.currentNumber = current     
+              this.currentNumber = current    
           }
           if(this.currentNumber >= this.vipPhoneticList.length - 1){
                this.btnState.btnStateLeft = ""
@@ -322,6 +329,9 @@ scroll-view {
               this.btnState.btnStateLeft = ""
               this.btnState.btnStateRight = ""
           }
+
+          
+
     }
 
 

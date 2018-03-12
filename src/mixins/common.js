@@ -20,6 +20,8 @@ export default class Common extends wepy.mixin {
        }
   }
 
+
+
   methods = {
     playVideo(index, e){
         this.$parent.playVideo(index)

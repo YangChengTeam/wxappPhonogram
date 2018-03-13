@@ -33,7 +33,9 @@ export default class extends wepy.app {
   }
 
   async onLaunch() {
-      
+      wepy.getSystemInfo().then(res=>{
+          this.globalData.model = res.model
+      })
   }
 }
 </script>

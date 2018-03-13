@@ -298,7 +298,7 @@ swiper {
 
 </style>
 <template>
-    <video id="video"  show-progress="true" autoplay="true" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video id="video" style="{{fixStyles}}"  show-progress="true" autoplay="true" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
 
     <audio id="learnAudio" hidden="true"></audio>
     <audio id="r2mAudio" hidden="true"></audio>
@@ -415,7 +415,9 @@ swiper {
         },
 
         phonetiClassCanUseNumber: 1,
-        phoneticListCanUseNumber: 4
+        phoneticListCanUseNumber: 4,
+
+        fixStyles: ""
     }
 
     computed = {
@@ -601,6 +603,9 @@ swiper {
 
     //视频
     playVideo(index){
+        if(this.$parent.globalData.model && this.$parent.globalData.model.indexOf("iPhone X") > -1){
+              this.fixStyles = "top:255rpx;"
+        }
         let info 
         if(this.currentNumber == 0){
            info = this.vipPhoneticList[index]
@@ -611,12 +616,10 @@ swiper {
             this.currentVideoSrc = (info.video)
             this.currentVideoPoster = info.cover
         }
-        console.log(info.video)
         this.isShowVideo = true
         this.$nextTick().then(()=>{
              this.videoCtx = wx.createVideoContext('video')
              this.videoCtx.play()
-
         })
     }
    

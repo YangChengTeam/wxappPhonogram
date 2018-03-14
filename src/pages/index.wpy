@@ -298,11 +298,10 @@ swiper {
 
 </style>
 <template>
-    <video id="video" style="{{fixStyles}}"  show-progress="true" autoplay="true" page-gesture="true" src="{{currentVideoSrc}}" class="key-video" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
+    <video id="video" class="key-video" style="{{fixStyles}}" custom-cache="{{false}}" show-progress="true" autoplay="true" page-gesture="true" src="{{currentVideoSrc}}" wx:if="{{isShowVideo}}" poster="{{currentVideoPoster}}"></video>
 
     <audio id="learnAudio" hidden="true"></audio>
     <audio id="r2mAudio" hidden="true"></audio>
-
 
     <image src="/images/main-bg.jpg" class="main-bg"></image>
     <view class="menu">
@@ -613,14 +612,10 @@ swiper {
            info = this.phonetiClassList[index]
         }
         if(info){
-            this.currentVideoSrc = (info.video)
+            this.currentVideoSrc = info.video.trim()
             this.currentVideoPoster = info.cover
         }
         this.isShowVideo = true
-        this.$nextTick().then(()=>{
-             this.videoCtx = wx.createVideoContext('video')
-             this.videoCtx.play()
-        })
     }
    
     //隐藏视频

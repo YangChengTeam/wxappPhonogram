@@ -303,7 +303,7 @@ scroll-view {
     }
 
     //点击左右按钮
-    clickArrow(n){
+    clickArrow(n){  
           n = parseInt(n)
           if(n < 0){
               if((n == -1 && this.currentNumber == 0) || (n == -2 && this.currentNumber >= this.vipPhoneticList.length - 1)){
@@ -329,9 +329,6 @@ scroll-view {
               this.btnState.btnStateLeft = ""
               this.btnState.btnStateRight = ""
           }
-
-          
-
     }
 
 

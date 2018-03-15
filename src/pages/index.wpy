@@ -305,9 +305,9 @@ swiper {
 
     <image src="/images/main-bg.jpg" class="main-bg"></image>
     <view class="menu">
-        <button @tap="change(0)" class="menu-learn{{ currentNumber == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
-        <button @tap="change(1)" class="menu-read2me{{ currentNumber == 1 ? ' menu-read2me-hover' : ''}}" title="跟我读"></button>
-        <button @tap="change(2)" class="menu-interest{{ currentNumber == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
+        <button @tap="change(0)" class="menu-learn{{ currentIndex == 0 ? ' menu-learn-hover' : ''}}" title="学音标"></button>
+        <button @tap="change(1)" class="menu-read2me{{ currentIndex == 1 ? ' menu-read2me-hover' : ''}}" title="跟我读"></button>
+        <button @tap="change(2)" class="menu-interest{{ currentIndex == 2 ? ' menu-interest-hover' : ''}}" title="趣味音标课"></button>
     </view>
 
     <swiper @change="change()" current="{{currentIndex}}" @animationfinish="animationFinish()" duration="100">
@@ -316,7 +316,7 @@ swiper {
         <interest :phonetiClassInfo.sync="phonetiClassInfo" :phonetiClassList.sync="phonetiClassList" :vipPhonetiClassList.sync="vipPhonetiClassList"></interest>
     </swiper>
 
-<!--     <image wx:if="{{currentNumber == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
+<!--     <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
  -->   <!--  <view class="pay-ppw" wx:if="{{isShowPayView}}">
           <view class="pay-ppw-bg">
              <view class="pay-content">
@@ -345,7 +345,7 @@ swiper {
 
     <view class="share" wx:if="{{isShowPayView}}">
       <view class="share-bg">
-          <view class="share-desc"><text>亲，分享到微信群后即可解锁后面的学习内容哦！</text></view>
+          <view class="share-desc"><text> 亲，分享到微信群后即可解锁后面的\n学习内容哦！</text></view>
           <button class="share-confirm" open-type="share"></button>
 
       </view>
@@ -381,7 +381,6 @@ swiper {
 
     data = {
         currentIndex: 0,      //当前swiper index
-        currentNumber: 0,
         currentVideoSrc: '',  //当前视频路径
         currentVideoPoster: '', //当前视频封面
         currentAudioSrc: '', //当前音频路径
@@ -403,8 +402,6 @@ swiper {
         isChange: false,
         isShowVideo: false,
         isShowPayView: false,
-
-        retryTimes: 0,
 
         scrollState: {
             pageX: 0,
@@ -438,17 +435,16 @@ swiper {
         change(itemId , e){
             if(itemId.toString().length > 0){
                 itemId = parseInt(itemId)
-                if(this.currentNumber != itemId){
+                if(this.currentIndex != itemId){
                     this.switched()
                     this.currentIndex = itemId
-                    this.currentNumber = itemId
                     this.isChange = true
                 } 
                 return
             }
             let current = e.detail.current
-            if(this.currentNumber == current) return  
-            this.currentNumber = current
+            if(this.currentIndex == current) return  
+            this.currentIndex = current
             this.isChange = true
         },
         //关闭支付窗口
@@ -544,21 +540,21 @@ swiper {
 
     closePayView(){
         this.isShowPayView = false
-        if(this.currentNumber == 0){
+        if(this.currentIndex == 0){
                this.$invoke("learn", "back")
-        }else if(this.currentNumber == 1){
+        }else if(this.currentIndex == 1){
                this.$invoke("read2me", "back")
-        }else if(this.currentNumber == 2){
+        }else if(this.currentIndex == 2){
                this.$invoke("interest", "back")
         }
     }
 
     //切换或移动之后的操作
     switched(){
-        if(this.currentNumber == 0 || this.currentNumber == 2){
+        if(this.currentIndex == 0 || this.currentIndex == 2){
              this.hideVideo()
         }
-        if(this.currentNumber == 0 || this.currentNumber == 2){
+        if(this.currentIndex == 0 || this.currentIndex == 2){
             this.stop()
             this.$invoke('learn', 'playEnd')
         } else {
@@ -583,13 +579,13 @@ swiper {
     //支付
     isShowPay(index){
        let status = false
-       if( this.currentNumber == 0 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
+       if( this.currentIndex == 0 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true;
        }
-       else if(this.currentNumber == 1 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
+       else if(this.currentIndex == 1 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true;
        }
-       else if(this.currentNumber == 2 && !this.isPhonetiClassVip() && index >= this.phonetiClassCanUseNumber){
+       else if(this.currentIndex == 2 && !this.isPhonetiClassVip() && index >= this.phonetiClassCanUseNumber){
            status = true;
        }
        return status
@@ -606,9 +602,9 @@ swiper {
               this.fixStyles = "top:255rpx;"
         }
         let info 
-        if(this.currentNumber == 0){
+        if(this.currentIndex == 0){
            info = this.vipPhoneticList[index]
-        } else if(this.currentNumber == 2){
+        } else if(this.currentIndex == 2){
            info = this.phonetiClassList[index]
         }
         if(info){
@@ -627,9 +623,9 @@ swiper {
 
     //播放音频
     play(src){
-        if(this.currentNumber == 0){
+        if(this.currentIndex == 0){
           this.audioCtx = this.learnAudioCtx
-        } else if(this.currentNumber == 1){
+        } else if(this.currentIndex == 1){
           this.audioCtx = this.r2mAudioCtx
         } 
         this.audioCtx.src = src
@@ -683,7 +679,7 @@ swiper {
        })
        let [phoneticListErr, phoneticList] = await req.get(api.phoneticList)
        
-       if(!phoneticListErr && phoneticList.data.data && phoneticList.data.data.list && phoneticList.data.data.list.length > 0){
+       if(phoneticList && phoneticList.data.data && phoneticList.data.data.list && phoneticList.data.data.list.length > 0){
           this.setPhoneticList(phoneticList.data.data.list)
           wepy.setStorage({
             key: api.phoneticList,
@@ -697,14 +693,8 @@ swiper {
        }))
 
        if(cacheRes && cacheRes.data && cacheRes.data.length > 0){
-            console.log(cacheRes.data)
             this.setPhoneticList(cacheRes.data)
             return
-       }
-
-       if(this.retryTimes++ >= 3){
-          this.retryTimes = 0
-          return
        }
 
        wepy.hideLoading()
@@ -822,19 +812,43 @@ swiper {
     }
 
     onLoad(params, data) {
-      try{
-        global.share_ids = wepy.getStorageSync("share_ids") || []
-     }catch(e){
-        global.share_ids = []
-     }
+       try{
+           global.share_ids = wepy.getStorageSync("share_ids") || []
+       }catch(e){
+           global.share_ids = []
+       }
+
        this.getPhoneticList()
 
        util.login2(()=>{
            this.setVip()
-       })
+       }, false)
+
        this.getPhonetiClass()
 
        this.getVipList()
+    }
+
+    reLoadData(){
+       if(!this.vipPhoneticList || this.vipPhoneticList.length == 0){
+           this.getPhoneticList()
+       }
+
+       if(!this.vipPhonetiClassList || this.vipPhonetiClassList.length == 0){
+           this.getPhonetiClass()
+       }
+
+       if(!this.vipList || this.vipList.length == 0){
+           this.getVipList()
+       }
+    }
+
+    onShow(){
+       if(this.onShowed){
+          this.reLoadData()
+          return
+       }
+       this.onShowed = true
     }
 
     onReady(res) {
@@ -875,7 +889,7 @@ swiper {
                   }
               },
               fail: function(res) {
-                  let msg = res.errMsg
+                  let msg = '分享失败'
                   wepy.showToast({
                       title: msg ? msg : '分享失败',
                       icon: 'none'

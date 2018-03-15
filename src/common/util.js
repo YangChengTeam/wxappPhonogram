@@ -8,8 +8,8 @@ import global from '../common/global.js'
 
 export default {
 
-    async login2(callbck){
-       let [loginErr, loginData] = await req.login()
+    async login2(callbck, showloading = true){
+       let [loginErr, loginData] = await req.login(showloading)
        if(loginErr){
            return false
        }

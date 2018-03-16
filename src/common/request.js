@@ -66,29 +66,27 @@ export default {
 		 return true
 	},
 
-	async login(showloading = true){
+	async login(){
          let [login_err, res] = await to(wepy.login())
-         
+         if(login_err){
+         	  return [{errMsg: 'login fail'}, null]
+         }
          let [getUserInfo_err, userInfo] = await to(wepy.getUserInfo())
          if(userInfo){
             if(typeof userInfo.rawData === 'string'){
                 userInfo.rawData = JSON.parse(userInfo.rawData)
             }
             global.userInfo = userInfo.rawData
-            if(showloading){
-            	wepy.showLoading({
+            wepy.showLoading({
             	     mask: true,
             	     title: '正在登录...'
             	})
-            }
             let [err, data ] = await this.post(api.loginUrl, Object.assign({
             	 encryptedData: userInfo.encryptedData,
                  code: res.code,
             	 iv: userInfo.iv
             }, userInfo.rawData))
-            if(showloading){
-            	wepy.hideLoading()
-            }
+            wepy.hideLoading()
             return [err, data ]
          }
          return [{errMsg: 'login fail'}, null]

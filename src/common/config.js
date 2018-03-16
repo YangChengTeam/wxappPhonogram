@@ -1,4 +1,4 @@
-const debug = false
+const debug = false 
 const host = {
 	dev: "https://tic.upkao.com",  //测试服务器
 	pro: "https://tic.upkao.com"   //正式服务器
@@ -9,7 +9,7 @@ function getBaseUrl(){
 }
 
 function getUrl(str){
-    return getBaseUrl() + str + "?app_id=6"
+    return getBaseUrl() + str + "?app_id=5"
 }
 
 const api = {
@@ -17,7 +17,8 @@ const api = {
 	phoneticList : getUrl("phonetic_list"),
 	phonetiClass: getUrl("phonetic_class"),
 	vipList: getUrl("vip_list"),
-	payUrl: getUrl("pay")
+	payUrl: getUrl("pay"),
+	superVip: false
 }
 
 

@@ -62,29 +62,33 @@
 .learn-word-samples {
   display:flex;
   width:80%;
-  height: 130rpx;
+  height: 180rpx;
   align-items: center;
   justify-content: flex-start;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
-.learn-word-samples-en {
-    font-size: 36rpx;
 
+.learn-word-samples-en {
+    font-size: 30rpx;
+    font-family: "Arial"
 } 
 
+
 .learn-word-samples-cn {
-    font-size: 36rpx;
+    font-size: 30rpx;
+    font-family: "Arial"
 }
 
 .learn-word-sample {
   display:flex;
-  width: 100%;
-  height: 130rpx;
+  width: 50%;
+  height: 75rpx;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  flex-wrap: nowrap;
 }
 
 .learn-word-sample > view > text {
@@ -152,8 +156,8 @@
                    <view class="learn-word-samples">
                        <block wx:for="{{item.example}}"  wx:for-index="exampleIndex" wx:for-item="example" wx:key="id" class="image-item">
                           <view @tap="play({{index}}-{{exampleIndex}})" class="learn-word-sample{{example.animation}}">
-                            <view class="learn-word-samples-en"><rich-text nodes="{{example.word_phonetic}}"></rich-text></view>
-                            <view class="learn-word-samples-cn">{{example.word}}</view>
+                            <view class="learn-word-samples-en" style="{{example.fixStyles}}"><rich-text nodes="{{example.word_phonetic_tmp}}"></rich-text></view>
+                            <view class="learn-word-samples-cn" style="{{example.fixStyles}}">{{example.word}}</view>
                           </view>
                        </block>
                    </view>

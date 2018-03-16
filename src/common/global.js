@@ -3,6 +3,6 @@ export default {
 	userInfo: {},
 	vips: [],
 	share_ids: [],
-	appId: 'wxa58d2a4f677d7347',
-	key: '6855c27ff1c45c1406d97dedd7fde004'
+	appId: 'wxa1c3a325881d2d59',
+	key: '31165f12dfe412f8b42681d320d3e8de'
 }

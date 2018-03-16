@@ -8,8 +8,8 @@ import global from '../common/global.js'
 
 export default {
 
-    async login2(callbck, showloading = true){
-       let [loginErr, loginData] = await req.login(showloading)
+    async login2(){
+       let [loginErr, loginData] = await req.login()
        if(loginErr){
            return false
        }
@@ -17,10 +17,7 @@ export default {
           global.session = loginData.data.data.info.session || ''
           global.vips =  loginData.data.data.vip || []
           for(let i =0 ; i < global.vips.length ; i++){
-              global.vips[i] = parseInt(global.vips[i])
-              if(callbck){
-                 callbck()
-              }
+              global.vips[i] = parseInt(global.vips[i])   
           }
           return true
        }
@@ -115,7 +112,7 @@ export default {
                 })
                 return false
             }
-            global.vips.push(payInfo.id)
+            global.vips.push(parseInt(payInfo.id))
             return true
         }
         let msg = '请求【支付参数】失败'

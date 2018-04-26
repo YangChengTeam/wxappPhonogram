@@ -131,9 +131,12 @@ swiper {
     margin-top: 35rpx;
 }
 
-.share-confirm:hover {
-    background: url('http://tic.upkao.com/Public/wxappImgs/share-btn-hover.png') no-repeat;
+.g2y-confirm {
+    background: url('http://tic.upkao.com/Public/wxappImgs/go2yb.png') no-repeat;
     background-size: 100% 100%;
+    width: 618rpx;
+    height: 108rpx;
+    margin-top: 35rpx;
 }
 
 .pay-ppw-bg {
@@ -350,6 +353,15 @@ swiper {
 
       </view>
      <button class="share-close" @tap="closePayView()"></button>
+    </view>
+
+    <view class="share" wx:if="{{isShowYinBiaoView}}">
+      <view class="share-bg">
+          <view class="share-desc"><text> 👍👍👍拼音已经学完啦，赶紧来学学音标吧，事半功倍哦</text></view>
+          <button class="g2y-confirm" @tap="goToYinBiao()"></button>
+
+      </view>
+     <button class="share-close" @tap="closeYinBiaoView()"></button>
     </view> 
 </template>
 
@@ -402,6 +414,7 @@ swiper {
         isChange: false,
         isShowVideo: false,
         isShowPayView: false,
+        isShowYinBiaoView: false,
 
         scrollState: {
             pageX: 0,
@@ -451,6 +464,18 @@ swiper {
         closePayView(e){
             this.closePayView()
         },
+        closeYinBiaoView(e){
+            this.isShowYinBiaoView = false
+        },
+        goToYinBiao(e){
+            wepy.navigateToMiniProgram({
+                appId: "wxa1c3a325881d2d59"
+            }).then((res)=>{
+                this.isShowYinBiaoView = false
+                this.$apply()
+            }) 
+        },
+
         //选择会员购买
         selectVip(index, e){
             if(this.vipList[index].isVip){
@@ -591,9 +616,29 @@ swiper {
        return status
     }
 
+
+    isShowYinBiao(index){
+       let status = false
+       if( this.currentIndex == 0 &&  index == this.vipPhoneticList.length - 1){
+           status = true;
+       }
+       else if(this.currentIndex == 1 && index == this.vipPhoneticList.length - 1){
+           status = true;
+       }
+       else if(this.currentIndex == 2 && index == this.vipPhonetiClassList.length - 1){
+           status = true;
+       }
+       return status
+    }
+
     showPayView(id){
         this.shareId = id
         this.isShowPayView = true
+    }
+
+    showYinBiao(){
+        this.isShowYinBiaoView = true
+        this.$apply()
     }
 
     //视频
@@ -701,7 +746,6 @@ swiper {
        this.getPhoneticList()
       
     }
-
 
 
     setPhoneticList(phoneticList){

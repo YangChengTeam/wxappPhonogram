@@ -254,11 +254,15 @@ scroll-view {
                       this.showPayView(this.vipPhoneticList[itemId].id)
                       return
                 }
+
                 this.isShowList = false
                 if(this.currentNumber != itemId ){
                     this.currentIndex = itemId
                     this.currentNumber = itemId
                     this.clickArrow(this.currentNumber)
+                    if(this.isShowYinBiao(this.currentNumber)){
+                        this.$parent.$parent.showYinBiao()
+                    }
                 }
                 return
           }
@@ -271,6 +275,10 @@ scroll-view {
           } else {
               this.clickArrow(this.currentNumber)
               this.$parent.$parent.isChange = true
+              if(this.isShowYinBiao(this.currentNumber)){
+
+                  this.$parent.$parent.showYinBiao()
+              }
           }
        },
        toogleList(e){
@@ -294,6 +302,10 @@ scroll-view {
 
     isShowPay(index){
         return this.$parent.$parent.isShowPay(index)
+    }
+
+    isShowYinBiao(index){
+       return this.$parent.$parent.isShowYinBiao(index)
     }
 
     showPayView(id){

@@ -82,7 +82,7 @@ swiper {
    left:0;
 }
 
-.share {
+.intro {
    position: fixed;
    width: 100%;
    height: 100%;
@@ -95,45 +95,18 @@ swiper {
    left:0;
 }
 
-.share-bg {
-   width: 702rpx;
-   height: 462rpx;
-   background:url('http://tic.upkao.com/Public/wxappImgs/share-bg.png');
-   background-size: 100% 100%;
-   margin-top: 300rpx;
+.intro image {
+   width: 562rpx;
+   height: 812rpx;
+   margin-top: 100rpx;
 }
 
-.share-desc {
-   margin-top: 50rpx;
-   margin-left: 80rpx;
-   margin-right: 80rpx;
-   color: #b05739;
-   height:215rpx;
-   font-size: 32rpx;
-   display:flex;
-   align-items:center;
-   justify-content:center;
-}
-
-.share-close {
+.intro-close {
     width: 97rpx;
     height: 97rpx;
     background: url('http://tic.upkao.com/Public/wxappImgs/pay-close.png') no-repeat;
     background-size: 100% 100%;
     margin-top:50rpx;
-}
-
-.share-confirm {
-    background: url('http://tic.upkao.com/Public/wxappImgs/share-btn.png') no-repeat;
-    background-size: 100% 100%;
-    width: 618rpx;
-    height: 108rpx;
-    margin-top: 35rpx;
-}
-
-.share-confirm:hover {
-    background: url('http://tic.upkao.com/Public/wxappImgs/share-btn-hover.png') no-repeat;
-    background-size: 100% 100%;
 }
 
 .pay-ppw-bg {
@@ -345,14 +318,10 @@ swiper {
           <button class="pay-close" @tap="closePayView()"></button>
     </view>
 
-    <!-- <view class="share" wx:if="{{isShowPayView}}">
-      <view class="share-bg">
-          <view class="share-desc"><text> 亲，分享到微信群后即可解锁后面的\n学习内容哦！</text></view>
-          <button class="share-confirm" open-type="share"></button>
-
-      </view>
-     <button class="share-close" @tap="closePayView()"></button>
-    </view>  -->
+    <view class="intro" hidden="{{isShowIntroView}}" >
+        <image src="/images/intro.png" />
+       <button class="intro-close" @tap="closeIntroView()"></button>
+    </view>
 </template>
 
 <script>
@@ -404,6 +373,7 @@ swiper {
         isChange: false,
         isShowVideo: false,
         isShowPayView: false,
+        isShowIntroView: true,
 
         scrollState: {
             pageX: 0,
@@ -452,6 +422,9 @@ swiper {
         //关闭支付窗口
         closePayView(e){
             this.closePayView()
+        },
+        closeIntroView(e){
+            this.isShowIntroView = true
         },
         //选择会员购买
         selectVip(index, e){
@@ -842,6 +815,29 @@ swiper {
        this.getPhonetiClass()
 
        this.getVipList()
+
+       
+         let [err, res] = await to(wepy.getStorage({
+            key : 'isShowIntro'
+         }));
+         console.log(res)
+         if(err){
+            this.isShowIntroView = false
+            this.$apply()
+         } else {
+             let result = false
+             if(res){
+                    result = res.data
+             }
+             if(!result){
+                  wepy.setStorage({
+                      key: 'isShowIntro',
+                      data: true
+                  })
+             }
+             this.isShowIntroView = result
+             this.$apply()
+        }
     }
 
     reLoadData(){

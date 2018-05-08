@@ -2,14 +2,10 @@ import wepy from 'wepy'
 
 export default class Common extends wepy.mixin {
   data = {
-      currentIndex: -1
+      currentIndex: 0
   }
 
   props = {
-       phoneticList: {
-           type: Array,
-           default: []
-       },
        vipPhoneticList: {
           type: Array,
           default: []
@@ -17,6 +13,10 @@ export default class Common extends wepy.mixin {
        canUseNumber: {
           type: Number,
           default: 9
+       },
+       item: {
+          type: Object,
+          default: {}
        }
   }
 

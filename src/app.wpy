@@ -16,12 +16,12 @@ export default class extends wepy.app {
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#72d9fa',
-      navigationBarTitleText: '拼音学习点读',
+      navigationBarTitleText: '作业帮拼音',
       navigationBarTextStyle: '#fff' ,
       backgroundColor : '#72d9fa',
       disableScroll: true
     }
-  }
+  } 
 
   constructor () {
     super()

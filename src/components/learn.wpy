@@ -6,6 +6,7 @@
   width: 100%;
   height: 100%;
   flex-direction: column;
+  margin-top: 70rpx;
 }
 
 
@@ -130,13 +131,13 @@
 </style>
 
 <template>
-   <main  :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList">
-      <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" class="image-item">
-           <view class="learn-content" @touchmove="touchMove" @touchstart="touchStart">
+   <main :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList" >
+      <block class="image-item">
+           <view class="learn-content" >
                <view class="video">
                    <image src="{{item.cover}}" class="video-cover"/>
                    <view class="video-play">
-                     <image @tap="playVideo({{index}})" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
+                     <image @tap="playVideo({{currentIndex}})" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
                    </view>
                </view>
                <view class="learn-desp">
@@ -145,13 +146,13 @@
                            {{item.desp}}
                        </scroll-view>
                    </view>
-                   <image src="{{item.playingImg}}"  @tap="play({{index}})" />
+                   <image src="{{item.playingImg}}"  @tap="play({{currentIndex}})" />
                </view>
                <view class="learn-word-info">
-                   <image src="{{item.img}}" class="{{item.sampleAnimation}}" @tap="playSample({{index}})" style="width:218rpx;height:126rpx" />
+                   <image src="{{item.img}}" class="{{item.sampleAnimation}}" @tap="playSample({{currentIndex}})" style="width:218rpx;height:126rpx" />
                    <view class="learn-word-samples">
                        <block wx:for="{{item.example}}"  wx:for-index="exampleIndex" wx:for-item="example" wx:key="id" class="image-item">
-                          <view @tap="play({{index}}-{{exampleIndex}})" class="learn-word-sample{{example.animation}}">
+                          <view @tap="play({{currentIndex}}-{{exampleIndex}})" class="learn-word-sample{{example.animation}}">
                             <view class="learn-word-samples-en"><rich-text nodes="{{example.word_phonetic}}"></rich-text></view>
                             <view class="learn-word-samples-cn">{{example.word}}</view>
                           </view>
@@ -159,7 +160,7 @@
                    </view>
                </view>
            </view>
-      </swiper-item>          
+      </block>          
   </main>
 </template>
 
@@ -183,6 +184,7 @@
     methods = {
        //播放 文字
        play(idx, e){
+        console.log(idx)
           this.resetPlayState()
            wepy.showLoading({
             title: '正在加载...'
@@ -195,7 +197,7 @@
              this.audioType = 'example'
              this.currentIndex = parseInt(idxs[0])
              this.currentExampleIndex = parseInt(idxs[1])
-             this.currntAudioSrc = this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['video']
+             this.currntAudioSrc = this.vipPhoneticList[this.currentIndex]['example'][this.currentExampleIndex]['video']
 
           } else {
              if(this.audioType == 'desc' && this.currentIndex ==  parseInt(idx)) {
@@ -204,7 +206,8 @@
              this.audioType = 'desc'
              this.currentIndex = parseInt(idx)
              this.currentExampleIndex = -1
-             this.currntAudioSrc = this.phoneticList[parseInt(idx)]['desp_audio']
+             console.log(this.vipPhoneticList[parseInt(idx)])
+             this.currntAudioSrc = this.vipPhoneticList[parseInt(idx)]['desp_audio']
              
           } 
           if(this.currntAudioSrc){
@@ -223,27 +226,26 @@
                  return
             }
             this.resetPlayState()
-             wepy.showLoading({
-            title: '正在加载...'
+               wepy.showLoading({
+               title: '正在加载...'
            })
             this.audioType = 'sample'
             this.currentIndex = index
-            this.currntAudioSrc = this.phoneticList[index]['voice']
+            this.currntAudioSrc = this.vipPhoneticList[index]['voice']
             this.$parent.play(this.currntAudioSrc)
        }
     }
 
     resetPlayState(){
-      
        if(this.currentIndex == -1){
            return
        }
        if(this.audioType == "example"){
-           this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['animation'] = ''
+           this.vipPhoneticList[this.currentIndex]['example'][this.currentExampleIndex]['animation'] = ''
        } else if(this.audioType == 'sample'){
-           this.phoneticList[this.currentIndex].sampleAnimation = ""
+           this.vipPhoneticList[this.currentIndex].sampleAnimation = ""
        } else if(this.audioType == 'desc'){
-           this.phoneticList[this.currentIndex].playingImg = "/images/click2read.png"
+           this.vipPhoneticList[this.currentIndex].playingImg = "/images/click2read.png"
        }
        this.$apply()
        this.$parent.stop()
@@ -255,11 +257,11 @@
     playing(){
        wepy.hideLoading()
        if(this.audioType == "example"){
-           this.phoneticList[this.currentIndex]['example'][this.currentExampleIndex]['animation'] = ' learn-word-sample-animate'
+           this.vipPhoneticList[this.currentIndex]['example'][this.currentExampleIndex]['animation'] = ' learn-word-sample-animate'
        } else if(this.audioType == 'sample'){
-          this.phoneticList[this.currentIndex].sampleAnimation = "learn-image-sample-animate"
+          this.vipPhoneticList[this.currentIndex].sampleAnimation = "learn-image-sample-animate"
        } else if(this.audioType == 'desc'){
-           this.phoneticList[this.currentIndex].playingImg = "http://tic.upkao.com/Public/wxappImgs/reading.gif"
+           this.vipPhoneticList[this.currentIndex].playingImg = "http://tic.upkao.com/Public/wxappImgs/reading.gif"
        }
        this.$apply()
     }

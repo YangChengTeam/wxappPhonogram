@@ -6,6 +6,7 @@
   width: 100%;
   height: 100%;
   flex-direction: column;
+  margin-top: 70rpx;
 }
 
 .interest-video {
@@ -80,13 +81,12 @@
 }
 </style>
 <template>
-<main :hasListBtn="hasListBtn" :phoneticList.sync="phonetiClassList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="phonetiClassList" :vipPhoneticList.sync="vipPhonetiClassList">
-    <swiper-item wx:for="{{phonetiClassList}}"  wx:for-index="index" wx:for-item="item" wx:key="id" >
-     <view class="interest-content" @touchmove="touchMove" @touchstart="touchStart">
+<main :hasListBtn="hasListBtn" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhonetiClassList" :vipPhoneticList.sync="vipPhonetiClassList">
+     <view class="interest-content">
         <view class="video">
               <image src="{{item.cover}}" class="video-cover"/>
               <view class="video-play">
-                     <image @tap="playVideo({{index}})" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
+                     <image @tap="playVideo({{currentIndex}})" src="http://tic.upkao.com/Public/wxappImgs/video-play-btn.png" style=""></image>
               </view>
         </view>
         <view class="interest-desc">
@@ -94,11 +94,10 @@
                 <view class="interest-desc-title">{{phonetiClassInfo.title}}</view>
                 <view class="interest-desc-desc">{{item.title}}</view>
                 <view class="interest-desc-strong">{{phonetiClassInfo.sub_title}}</view>
-                <view class="interest-desc-price">迎新年特价<text class="new-price">{{realPrice}}</text>元<text class="old-price">原价{{price}}元</text></view>
+                <view class="interest-desc-price">年中大促<text class="new-price">{{realPrice}}</text>元<text class="old-price">原价{{price}}元</text></view>
           </view>
         </view>
-     </view>
-   </swiper-item>
+   </view>
  </main>
 </template>
 <script>
@@ -116,14 +115,14 @@
     }
 
     props = {
+       vipPhoneticList: {
+          type: Array,
+          default: []
+       },
        phonetiClassInfo: {
            type: Array,
            default: []
-       },
-       phonetiClassList: {
-           type: Array,
-           default: []
-       },
+       }, 
        canUseNumber: {
           type: Number,
           default: 1
@@ -132,6 +131,10 @@
           type: Array,
           default: []
        },
+       item: {
+          type: Object,
+          default: {}
+       }
     }
 
     mixins = [Common]

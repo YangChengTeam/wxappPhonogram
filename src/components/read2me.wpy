@@ -6,6 +6,7 @@
   width: 100%;
   height: 100%;
   flex-direction: column;
+  margin-top: 70rpx;
 }
 
 .read2me-process {
@@ -74,9 +75,9 @@
 
 </style>
 <template>
-  <main :phoneticList.sync="phoneticList" :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList">
-    <swiper-item wx:for="{{phoneticList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">
-     <view class="read2me-content" @touchmove="touchMove" @touchstart="touchStart"> 
+  <main :canUseNumber.sync="canUseNumber" :vipPhoneticList.sync="vipPhoneticList">
+    <block>
+     <view class="read2me-content"> 
         <view class="read2me-process">
             <text>跟读进度: {{playCount}}/3</text>
             <view class="record-process" wx:if="{{isShowProcessBar}}">
@@ -90,10 +91,10 @@
         </view>
         <view class="read2me-play">
              <image src="{{currentr2mSrc}}" style="width:183rpx;height:203rpx;"/>
-             <image src="{{currentBtnSrc}}" style="width:124rpx;height:126rpx; margin-left: 20rpx;" @tap="play({{index}})"/>
+             <image src="{{currentBtnSrc}}" style="width:124rpx;height:126rpx; margin-left: 20rpx;" @tap="play({{currentIndex}})"/>
         </view>
      </view>
-   </swiper-item>
+   </block>
   </main>
 </template>
 <script>
@@ -182,7 +183,7 @@
            return
        }
        if(this.playState == 0){
-          this.currentAudioSrc = this.phoneticList[this.currentIndex].voice
+          this.currentAudioSrc = this.vipPhoneticList[this.currentIndex].voice
           this.playState = 1   //播放tip
           this.$parent.play(this.currentAudioSrc)
        }
@@ -266,7 +267,7 @@
          this.isShowProcessBar = false
          this.$apply()
          this.currentRecordSrc = res.tempFilePath
-         this.currentAudioSrc = this.phoneticList[this.currentIndex].voice
+         this.currentAudioSrc = this.vipPhoneticList[this.currentIndex].voice
          this.$parent.play(this.currentAudioSrc)
       })
 

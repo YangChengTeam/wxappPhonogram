@@ -21,7 +21,7 @@ export default class extends wepy.app {
       backgroundColor : '#72d9fa',
       disableScroll: true
     }
-  }
+  } 
 
   constructor () {
     super()

@@ -156,15 +156,9 @@
                    <image src="{{item.img}}" class="{{item.sampleAnimation}}" @tap="playSample({{currentIndex}})" style="width:218rpx;height:126rpx" />
                    <view class="learn-word-samples">
                        <block wx:for="{{item.example}}"  wx:for-index="exampleIndex" wx:for-item="example" wx:key="id" class="image-item">
-<<<<<<< HEAD
-                          <view @tap="play({{index}}-{{exampleIndex}})" class="learn-word-sample{{example.animation}}">
-                            <view class="learn-word-samples-en" style="{{example.fixStyles}}"><rich-text nodes="{{example.word_phonetic_tmp}}"></rich-text></view>
-                            <view class="learn-word-samples-cn" style="{{example.fixStyles}}">{{example.word}}</view>
-=======
                           <view @tap="play({{currentIndex}}-{{exampleIndex}})" class="learn-word-sample{{example.animation}}">
                             <view class="learn-word-samples-en"><rich-text nodes="{{example.word_phonetic}}"></rich-text></view>
                             <view class="learn-word-samples-cn">{{example.word}}</view>
->>>>>>> master
                           </view>
                        </block>
                    </view>

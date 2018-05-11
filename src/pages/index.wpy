@@ -109,8 +109,6 @@ swiper {
     margin-top:50rpx;
 }
 
-<<<<<<< HEAD
-=======
 .share-confirm {
     background: url('http://tic.upkao.com/Public/wxappImgs/share-btn.png') no-repeat;
     background-size: 100% 100%;
@@ -127,7 +125,6 @@ swiper {
     margin-top: 35rpx;
 }
 
->>>>>>> master
 .pay-ppw-bg {
     width: 702rpx;
     height: 879rpx;
@@ -137,14 +134,12 @@ swiper {
 }
 
 .pay-content {
-    display: flex;
-    flex-direction: column;
-    height: 680rpx;
+    display: block;
+    height: 528rpx;
     width: 622rpx;
     margin-top: 160rpx;
     margin-left:40rpx;
-    align-items: center;
-    justify-content: flex-start;
+    overflow-y: auto; 
 }
 
 .pay-item {
@@ -309,7 +304,6 @@ swiper {
         <read2me :canUseNumber.sync="phoneticListCanUseNumber" :vipPhoneticList.sync="vipPhoneticList" :item.sync="learnPhoneticItem"></read2me>
         <interest :canUseNumber.sync="phonetiClassCanUseNumber" :phonetiClassInfo.sync="phonetiClassInfo" :item.sync="phonetiClassItem" :vipPhonetiClassList.sync="vipPhonetiClassList"></interest>
     </swiper>
-<<<<<<< HEAD
 
 <!--     <image wx:if="{{currentIndex == 0}}" src="http://tic.upkao.com/Public/wxappImgs/ad.gif" class="ad"></image>
  -->    <view class="pay-ppw" wx:if="{{isShowPayView}}">
@@ -317,9 +311,9 @@ swiper {
              <view class="pay-content">
                 <view class="pay-item" wx:for="{{vipList}}"  wx:for-index="index" wx:for-item="item" wx:key="id">    
                    <view class="pay-info">
-                        <view class="pay-num pay-num-{{index+1}}"></view>
+                        <image class="pay-num" src="{{item.icon}}"></image>
                         <view class="pay-desc">
-                           <view class="pay-title" style="{{ (index == 0) ? 'font-size: 23rpx;' : ''}}">{{item.title}}</view>
+                           <view class="pay-title" style="{{ (index > 2) ? 'font-size: 23rpx;' : ''}}">{{item.title}}</view>
                            <view class="pay-simple-desc">{{item.sub_title}}</view>
                         </view>
                         <view class="pay-price">
@@ -330,10 +324,11 @@ swiper {
                    <image @tap="selectVip({{index}})" class="pay-select" src="{{item.isVip ? 'http://tic.upkao.com/Public/wxappImgs/pay-select-disable.png' : item.selectImg}}"></image>
                 </view>
                  
-                <view class="pay-confirm-wrap">
-                <button class="pay-confirm" @tap="pay()"></button>
-                </view>
+               
             </view>
+            <view class="pay-confirm-wrap">
+                <button class="pay-confirm" open-type="getUserInfo" bindgetuserinfo="pay()"></button>
+           </view>
           </view>
           <button class="pay-close" @tap="closePayView()"></button>
     </view>
@@ -342,25 +337,7 @@ swiper {
         <image src="/images/intro.png" />
        <button class="intro-close" @tap="closeIntroView()"></button>
     </view>
-=======
-    <view class="share" wx:if="{{isShowPayView}}">
-      <view class="share-bg">
-          <view class="share-desc"><text> 亲，分享到微信群后即可解锁后面的\n学习内容哦！</text></view>
-          <button class="share-confirm" open-type="share"></button>
 
-      </view>
-     <button class="share-close" @tap="closePayView()"></button>
-    </view>
-
-    <view class="share" wx:if="{{isShowYinBiaoView}}">
-      <view class="share-bg">
-          <view class="share-desc"><text> {{goYbDesc}}</text></view>
-          <button class="g2y-confirm" @tap="goToYinBiao()"></button>
-
-      </view>
-     <button class="share-close" @tap="closeYinBiaoView()"></button>
-    </view> 
->>>>>>> master
 </template>
 
 <script>
@@ -390,7 +367,6 @@ swiper {
     mixins = []
 
     data = {
-        goYbDesc: "恭喜您不但获得了免费学习拼音的资格，还免费获取了学习音标的机会！资深外教Alex教你学音标！",
         currentNumber: 0,
         currentIndex: 0,      //当前swiper index
         currentVideoSrc: '',  //当前视频路径
@@ -412,12 +388,8 @@ swiper {
         isMoved: false,
         isShowVideo: false,
         isShowPayView: false,
-<<<<<<< HEAD
+
         isShowIntroView: true,
-=======
-        isShowYinBiaoView: false,
-        $isShowYinBiao: false,
->>>>>>> master
 
         scrollState: {
             pageX: 0,
@@ -443,10 +415,10 @@ swiper {
             if(this.currentNumber == current) return  
             this.switched()
             this.currentNumber = current
-           
         },
         tab(itemId , e){
             itemId = parseInt(itemId)
+            if(itemId == this.currentNumber) return
             this.switched()
             this.currentNumber = itemId
             this.currentIndex = itemId
@@ -455,14 +427,11 @@ swiper {
         closePayView(e){
             this.closePayView()
         },
-<<<<<<< HEAD
+
         closeIntroView(e){
             this.isShowIntroView = true
         },
-=======
-        closeYinBiaoView(e){
-            this.isShowYinBiaoView = false
-        },
+
         goToYinBiao(e){
             wepy.navigateToMiniProgram({
                 appId: "wxa1c3a325881d2d59"
@@ -472,7 +441,6 @@ swiper {
             }) 
         },
 
->>>>>>> master
         //选择会员购买
         selectVip(index, e){
             if(this.vipList[index].isVip){
@@ -510,31 +478,12 @@ swiper {
     }
 
     setVip(){
-<<<<<<< HEAD
-      this.closePayView()
-      this.$apply()  
-      wepy.showLoading({
-         title: '正在加载...'
-      })
-    
-      if(this.isPhoneticListVip()){
-          this.initVipPhoneticList(true)
-          this.initVipList(true)
-          this.learnPhoneticList = util.copyObject(this.vipPhoneticList)
-          this.r2mPhoneticList = util.copyObject(this.vipPhoneticList)  
-      }
-
-      if(this.isPhonetiClassVip()){
-          this.phonetiClassList = this.vipPhonetiClassList 
-      }
-      this.$apply()  
-=======
       wepy.showLoading({
          title: '正在加载...'
       })
       this.closePayView()
       this.$apply()   
->>>>>>> master
+
       this.$nextTick().then(()=>{
           wepy.hideLoading()
       })
@@ -542,19 +491,11 @@ swiper {
 
     closePayView(){
         this.isShowPayView = false
-<<<<<<< HEAD
-        if(this.currentIndex == 0 && !this.isPhoneticListVip()){
-               this.$invoke("learn", "back")
-        }else if(this.currentIndex == 1 && !this.isPhoneticListVip()){
-               this.$invoke("read2me", "back")
-        }else if(this.currentIndex == 2 && !this.isPhonetiClassVip()){
-=======
         if(this.currentNumber == 0){
                this.$invoke("learn", "back")
         }else if(this.currentNumber == 1){
                this.$invoke("read2me", "back")
         }else if(this.currentNumber == 2){
->>>>>>> master
                this.$invoke("interest", "back")
         }
     }
@@ -578,17 +519,16 @@ swiper {
 
     //能看学音标模块
     isPhoneticListVip(){
-       return api.superVip  || global.vips.includes(1) || global.vips.includes(2)  || global.vips.includes(3) || global.vips.includes(4) 
+       return api.superVip  || global.vips.includes(1) || global.vips.includes(2)  || global.vips.includes(3) || global.vips.includes(4) || global.vips.includes(12) || global.vips.includes(13)
     }
     
     isPhonetiClassVip(){
-       return api.superVip  || global.vips.includes(4) || global.vips.includes(3)  || global.vips.includes(2) 
+       return api.superVip  || global.vips.includes(4) || global.vips.includes(3)  || global.vips.includes(2) || global.vips.includes(12) || global.vips.includes(13)
     }
    
 
     //支付
     isShowPay(index){
-
        let status = false
        if( this.currentNumber == 0 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true
@@ -596,39 +536,21 @@ swiper {
        else if(this.currentNumber == 1 && !this.isPhoneticListVip() && index >= this.phoneticListCanUseNumber){
            status = true
        }
-       // else if(this.currentNumber == 2 && !this.isPhonetiClassVip() && index >= this.phonetiClassCanUseNumber){
-       //     status = true
-       // }
+       else if(this.currentNumber == 2 && !this.isPhonetiClassVip() && index >= this.phonetiClassCanUseNumber){
+           status = true
+       }
        return status
     }
 
 
-    isShowYinBiao(index){
-       let status = false
-       if(index > 0){
-           if( (this.currentNumber == 0 || this.currentNumber == 1) && this.$isShowYinBiao){
-              return false
-           }
-           if(this.currentNumber == 2){ 
-              this.goYbDesc = "想要获得更多关于音标的学习内容，那就赶紧进入音标小程序吧！资深外教Alex手把手教你学音标！"
-           } else {
-              this.goYbDesc = "恭喜您不但获得了免费学习拼音的资格，还免费获取了学习音标的机会！资深外教Alex教你学音标！";
-           }
-           return true
-       }
-    }
+   
 
     showPayView(id){
         this.shareId = id
         this.isShowPayView = true
     }
 
-    showYinBiao(){
-        this.isShowYinBiaoView = true
-        this.$isShowYinBiao = true
-        this.$apply()
-    }
-
+    
     //视频
     playVideo(index){
         if(this.$parent.globalData.model && this.$parent.globalData.model.indexOf("iPhone X") > -1){
@@ -731,8 +653,6 @@ swiper {
        }
 
        wepy.hideLoading()
-
-<<<<<<< HEAD
        self.getPhoneticList()
     }
 
@@ -752,8 +672,15 @@ swiper {
                        // }
                    })
                }
-=======
-    setPhoneticList(phoneticList){
+               if( this.isPhoneticListVip() || k < this.phoneticListCanUseNumber){
+                   item.isShowLock = false
+               } else {
+                   item.isShowLock = true
+               }
+       })
+    }
+
+     setPhoneticList(phoneticList){
           this.vipPhoneticList = phoneticList
           this.vipPhoneticList.forEach((item, k)=>{
                item.animation = ''
@@ -762,37 +689,20 @@ swiper {
                item.example.forEach((example)=>{
                    example.word_phonetic = example.word_phonetic.replace(example.letter, `<b style='color:#ff0000'>${example.letter}</b>`)
                })
->>>>>>> master
                if( this.isPhoneticListVip() || k < this.phoneticListCanUseNumber){
                    item.isShowLock = false
                } else {
                    item.isShowLock = true
                }
-<<<<<<< HEAD
-       })
-    }
-
-    setPhoneticList(phoneticList){
-          this.vipPhoneticList = phoneticList
-          this.initVipPhoneticList()
-
-          if(this.isPhoneticListVip()){
-             this.learnPhoneticList = util.copyObject(this.vipPhoneticList)
-             this.r2mPhoneticList = util.copyObject(this.vipPhoneticList)
-          } else {
-             this.learnPhoneticList = util.copyObject(this.vipPhoneticList.slice(0, this.phoneticListCanUseNumber + 1))
-             this.r2mPhoneticList = util.copyObject(this.vipPhoneticList.slice(0, this.phoneticListCanUseNumber + 1))
-          }
-=======
           })
           this.learnPhoneticItem = this.vipPhoneticList[0]
->>>>>>> master
           this.$apply()
           this.$nextTick().then(() => {
-                  wepy.hideLoading()
+              wepy.hideLoading()
           });
     }
-  
+
+   
     //获取趣味音标
     async getPhonetiClass(){
        let [phonetiClassErr, phonetiClass] = await req.get(api.phonetiClass)
@@ -815,8 +725,6 @@ swiper {
        })
   
     } 
-
-    
 
     setPhonetiClass(data){
         this.phonetiClassInfo = data.info
@@ -870,6 +778,7 @@ swiper {
 
     setVipList(vipList){
             this.vipList = vipList
+            console.log(vipList)
             this.initVipList()
             this.vipList[0]['selectImg'] = "http://tic.upkao.com/Public/wxappImgs/pay-select.png"
             this.currentPayInfo = this.vipList[0]
@@ -885,26 +794,26 @@ swiper {
        this.getVipList()
 
        
-         let [err, res] = await to(wepy.getStorage({
+      let [err, res] = await to(wepy.getStorage({
             key : 'isShowIntro'
-         }));
-         console.log(res)
-         if(err){
-            this.isShowIntroView = false
-            this.$apply()
-         } else {
-             let result = false
-             if(res){
-                    result = res.data
-             }
-             if(!result){
+      }));
+      
+      if(err){
+          this.isShowIntroView = false
+          this.$apply()
+      } else {
+          let result = false
+          if(res){
+              result = res.data
+          }
+          if(!result){
                   wepy.setStorage({
                       key: 'isShowIntro',
                       data: true
                   })
-             }
-             this.isShowIntroView = result
-             this.$apply()
+          }
+          this.isShowIntroView = result
+          this.$apply()
         }
     }
 
@@ -960,7 +869,5 @@ swiper {
               }
         }
     }
-
-
   }
 </script>

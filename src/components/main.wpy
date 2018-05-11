@@ -264,10 +264,7 @@ scroll-view {
         return this.$parent.$parent.isShowPay(index)
     }
 
-    isShowYinBiao(index){
-       return this.$parent.$parent.isShowYinBiao(index)
-    }
-
+  
     showPayView(id){
         this.$parent.$parent.hideVideo()
         this.$parent.$parent.showPayView(id)
@@ -276,28 +273,20 @@ scroll-view {
 
     //点击左右按钮
     clickArrow(n){  
-          n = parseInt(n)
-          if(n < 0){
-              if((n == -1 && this.currentIndex == 0) || (n == -2 && this.currentIndex >= this.vipPhoneticList.length - 1)){
+          var current = parseInt(n)
+          if(current < 0){
+              if((current == -1 && this.currentIndex == 0) || (current == -2 && this.currentIndex >= this.vipPhoneticList.length - 1)){
                   return
               }
-              var current = (this.currentIndex) + ((n == -1) ? n : 1)
+              current = (this.currentIndex) + ((current == -1) ? current : 1)
 
-              if(this.isShowPay(current)){
-                  this.showPayView(this.vipPhoneticList[current].id)
-                  return
-              }
-              if(this.isShowYinBiao(current)){
-                 this.$parent.$parent.showYinBiao()
-                 return
-              }
               this.$parent.$parent.switched()
               this.$parent.$parent.$apply()
-              this.currentIndex = current
           } else {
-               this.isShowList = !this.isShowList
-               this.currentIndex = n
+              this.isShowList = !this.isShowList
           }
+
+
           if(this.currentIndex >= this.vipPhoneticList.length - 1){
                this.btnState.btnStateLeft = ""
                this.btnState.btnStateRight = " btn-right-disable"
@@ -308,10 +297,16 @@ scroll-view {
               this.btnState.btnStateLeft = ""
               this.btnState.btnStateRight = ""
           }
-          this.$parent.currentIndex = this.currentIndex
-          this.$parent.item = this.vipPhoneticList[this.currentIndex]
+
+          if(this.isShowPay(current)){
+              this.showPayView(this.vipPhoneticList[current].id)
+              return
+          }
+          this.$parent.item = this.vipPhoneticList[current]
+          this.$parent.currentIndex = current
+          this.currentIndex = current
+
           this.$parent.$apply()
-          
     }
 
 

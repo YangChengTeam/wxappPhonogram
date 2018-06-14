@@ -142,10 +142,10 @@
 
     computed = {
        realPrice(){
-           return parseInt(this.phonetiClassInfo.real_price)
+           return parseFloat(this.phonetiClassInfo.real_price)
        },
        price(){
-           return parseInt(this.phonetiClassInfo.price)
+           return parseFloat(this.phonetiClassInfo.price)
        }
     }
 

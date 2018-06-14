@@ -18,6 +18,7 @@ const api = {
 	phonetiClass: getUrl("phonetic_class"),
 	vipList: getUrl("vip_list"),
 	payUrl: getUrl("pay"),
+	updateUserUrl: getUrl("user_edit"),
 	superVip: false
 }
 

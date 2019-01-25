@@ -280,6 +280,7 @@ swiper {
     left: 75rpx;
     top: 220rpx;
     position: absolute;
+    z-index:1000;
 }
 
 .video {
